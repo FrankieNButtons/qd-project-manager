@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QD Projects Manager</title>
+  <meta name="description" content="Track multiple teams. Compare progress at a glance. Get notified when things change.">
+  <link rel="icon" href="assets/favicon.png">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg: #FAFBFC;
+      --surface: #FFFFFF;
+      --text: #1A2B4A;
+      --text-secondary: #5A6B8A;
+      --primary: #2B7AE8;
+      --primary-light: #E6F0FD;
+      --accent: #F59E0B;
+      --gradient-start: #1E3A5F;
+      --gradient-end: #2B7AE8;
+      --border: #E8ECF0;
+      --radius: 16px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ─── Hero ─────────────────────────────────────────── */
+
+    .hero {
+      background: linear-gradient(135deg, var(--gradient-start) 0%, var(--gradient-end) 100%);
+      color: #fff;
+      padding: 80px 24px 60px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle at 30% 40%, rgba(255,255,255,0.06) 0%, transparent 50%),
+                  radial-gradient(circle at 70% 60%, rgba(255,255,255,0.04) 0%, transparent 40%);
+      pointer-events: none;
+    }
+
+    .hero-inner { max-width: 800px; margin: 0 auto; position: relative; z-index: 1; }
+
+    .hero-logo { height: 64px; margin-bottom: 32px; filter: brightness(0) invert(1); }
+
+    .hero h1 {
+      font-size: clamp(2rem, 5vw, 3.2rem);
+      font-weight: 800;
+      line-height: 1.15;
+      margin-bottom: 20px;
+      letter-spacing: -0.02em;
+    }
+
+    .hero p {
+      font-size: clamp(1rem, 2.5vw, 1.25rem);
+      opacity: 0.85;
+      max-width: 600px;
+      margin: 0 auto 40px;
+      line-height: 1.7;
+    }
+
+    .hero-buttons { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 28px;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+
+    .btn:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(0,0,0,0.15); }
+
+    .btn-primary { background: #fff; color: var(--gradient-start); }
+    .btn-outline { background: transparent; color: #fff; border: 1.5px solid rgba(255,255,255,0.4); }
+    .btn-outline:hover { border-color: #fff; }
+
+    /* ─── Badges ───────────────────────────────────────── */
+
+    .badges {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      flex-wrap: wrap;
+      padding: 24px 24px 0;
+      max-width: 700px;
+      margin: 0 auto;
+    }
+
+    .badges img { height: 22px; }
+
+    /* ─── Screenshots ──────────────────────────────────── */
+
+    .screenshots {
+      padding: 80px 24px;
+      text-align: center;
+    }
+
+    .screenshots h2 {
+      font-size: 1.8rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+
+    .screenshots > p {
+      color: var(--text-secondary);
+      font-size: 1.05rem;
+      margin-bottom: 48px;
+      max-width: 540px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .phone-row {
+      display: flex;
+      justify-content: center;
+      gap: 24px;
+      flex-wrap: wrap;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .phone-frame {
+      flex: 0 0 auto;
+      width: 240px;
+      text-align: center;
+    }
+
+    .phone-frame img {
+      width: 100%;
+      border-radius: 20px;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.10);
+      transition: transform 0.3s;
+    }
+
+    .phone-frame img:hover { transform: translateY(-6px); }
+
+    .phone-frame .label {
+      margin-top: 16px;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-secondary);
+    }
+
+    /* ─── Features ─────────────────────────────────────── */
+
+    .features {
+      padding: 80px 24px;
+      background: var(--surface);
+    }
+
+    .features-inner {
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    .features h2 {
+      text-align: center;
+      font-size: 1.8rem;
+      font-weight: 700;
+      margin-bottom: 48px;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 28px;
+    }
+
+    .feature-card {
+      background: var(--bg);
+      border-radius: var(--radius);
+      padding: 28px;
+      border: 1px solid var(--border);
+      transition: box-shadow 0.2s, transform 0.2s;
+    }
+
+    .feature-card:hover {
+      box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+      transform: translateY(-2px);
+    }
+
+    .feature-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      margin-bottom: 16px;
+    }
+
+    .feature-card h3 {
+      font-size: 1.05rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .feature-card p {
+      font-size: 0.92rem;
+      color: var(--text-secondary);
+      line-height: 1.65;
+    }
+
+    /* ─── How it works ─────────────────────────────────── */
+
+    .how-it-works {
+      padding: 80px 24px;
+    }
+
+    .how-it-works-inner { max-width: 800px; margin: 0 auto; }
+
+    .how-it-works h2 {
+      text-align: center;
+      font-size: 1.8rem;
+      font-weight: 700;
+      margin-bottom: 48px;
+    }
+
+    .steps {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      position: relative;
+    }
+
+    .step {
+      display: flex;
+      gap: 24px;
+      align-items: flex-start;
+      position: relative;
+      padding-bottom: 40px;
+    }
+
+    .step:last-child { padding-bottom: 0; }
+
+    .step-number {
+      flex: 0 0 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 1.1rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .step:not(:last-child) .step-number::after {
+      content: '';
+      position: absolute;
+      top: 48px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 2px;
+      height: calc(100% + 40px - 48px);
+      background: var(--border);
+      z-index: 0;
+    }
+
+    .step-content h3 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+      padding-top: 10px;
+    }
+
+    .step-content p {
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+      line-height: 1.65;
+    }
+
+    /* ─── CTA ──────────────────────────────────────────── */
+
+    .cta {
+      background: linear-gradient(135deg, var(--gradient-start) 0%, var(--gradient-end) 100%);
+      color: #fff;
+      text-align: center;
+      padding: 80px 24px;
+    }
+
+    .cta h2 {
+      font-size: 1.8rem;
+      font-weight: 700;
+      margin-bottom: 16px;
+    }
+
+    .cta p {
+      opacity: 0.85;
+      font-size: 1.05rem;
+      max-width: 500px;
+      margin: 0 auto 32px;
+    }
+
+    .cta .btn-primary { background: #fff; color: var(--gradient-start); }
+
+    /* ─── Footer ───────────────────────────────────────── */
+
+    footer {
+      padding: 40px 24px;
+      text-align: center;
+      font-size: 13px;
+      color: var(--text-secondary);
+      border-top: 1px solid var(--border);
+    }
+
+    footer a { color: var(--primary); text-decoration: none; }
+
+    /* ─── Responsive ───────────────────────────────────── */
+
+    @media (max-width: 640px) {
+      .hero { padding: 60px 20px 48px; }
+      .phone-frame { width: 200px; }
+      .features-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-inner">
+      <img src="assets/QDPMLOGO.png" alt="QD Projects Manager" class="hero-logo">
+      <h1>Multi-team progress tracking,<br>automated.</h1>
+      <p>Connect your Tencent Docs spreadsheets and get live dashboards, team rankings, and instant alerts — across Android, iOS, and Web.</p>
+      <div class="hero-buttons">
+        <a href="https://github.com/FrankieNButtons/qd-project-manager" class="btn btn-primary">
+          <svg width="18" height="18" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+          View on GitHub
+        </a>
+        <a href="#get-started" class="btn btn-outline">Get Started</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Badges -->
+  <div class="badges">
+    <img src="https://img.shields.io/badge/Platform-Android%20%7C%20iOS%20%7C%20Web-blue?style=flat-square" alt="Platform">
+    <img src="https://img.shields.io/badge/Expo%20SDK-55-000020?style=flat-square&logo=expo" alt="Expo SDK">
+    <img src="https://img.shields.io/badge/React%20Native-0.83-61DAFB?style=flat-square&logo=react" alt="React Native">
+    <img src="https://img.shields.io/badge/License-MIT-green?style=flat-square" alt="License">
+    <img src="https://img.shields.io/github/stars/FrankieNButtons/qd-project-manager?style=flat-square" alt="Stars">
+  </div>
+
+  <!-- Screenshots -->
+  <section class="screenshots">
+    <h2>See it in action</h2>
+    <p>Three screens, one workflow. Rankings, detail cards, and full configurability.</p>
+    <div class="phone-row">
+      <div class="phone-frame">
+        <img src="assets/screenshots/overview.png" alt="Overview">
+        <div class="label">Overview</div>
+      </div>
+      <div class="phone-frame">
+        <img src="assets/screenshots/teams.png" alt="Teams">
+        <div class="label">Teams</div>
+      </div>
+      <div class="phone-frame">
+        <img src="assets/screenshots/settings.png" alt="Settings">
+        <div class="label">Settings</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features -->
+  <section class="features">
+    <div class="features-inner">
+      <h2>Built for project managers</h2>
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon" style="background: #E6F0FD;">&#x1F4CA;</div>
+          <h3>Team Rankings</h3>
+          <p>All teams ranked by weighted progress. Stacked bars show each indicator's contribution at a glance.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon" style="background: #FEF3C7;">&#x1F514;</div>
+          <h3>Smart Alerts</h3>
+          <p>Detects when teams add or remove indicators. Modal alerts require acknowledgment; share a pre-drafted alignment message.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon" style="background: #ECFDF5;">&#x2696;&#xFE0F;</div>
+          <h3>Weighted Scoring</h3>
+          <p>Adjust how much each KPI matters. Patents twice as important as partnerships? Set it here.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon" style="background: #FEE2E2;">&#x1F50D;</div>
+          <h3>Sort &amp; Filter</h3>
+          <p>Sort by any indicator. Filter by completion status or custom conditions like "patents > 50".</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon" style="background: #F3E8FF;">&#x1F4E8;</div>
+          <h3>Message Center</h3>
+          <p>Full event log with unread badges. Tap any alert to re-open its modal and take action.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon" style="background: #E0F2FE;">&#x1F4F1;</div>
+          <h3>Cross-Platform</h3>
+          <p>One codebase. Runs natively on Android and iOS via Expo, and in the browser for quick debugging.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- How it works -->
+  <section class="how-it-works" id="get-started">
+    <div class="how-it-works-inner">
+      <h2>Get started in 3 steps</h2>
+      <div class="steps">
+        <div class="step">
+          <div class="step-number">1</div>
+          <div class="step-content">
+            <h3>Clone &amp; install</h3>
+            <p>Clone the repo and run <code>npm install</code>. Requires Node.js 18+. No native toolchain needed.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-number">2</div>
+          <div class="step-content">
+            <h3>Add your teams</h3>
+            <p>Open the Settings tab, paste a Tencent Docs spreadsheet link, and give the team a name. Repeat for each team.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-number">3</div>
+          <div class="step-content">
+            <h3>Watch it work</h3>
+            <p>The app fetches data automatically, ranks teams, and starts watching for indicator changes. You're done.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta">
+    <h2>Ready to track?</h2>
+    <p>Stop opening multiple spreadsheets. Let the app do the cross-referencing for you.</p>
+    <a href="https://github.com/FrankieNButtons/qd-project-manager" class="btn btn-primary">
+      <svg width="18" height="18" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+      View on GitHub
+    </a>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <p>QD Projects Manager &middot; MIT License &middot; Built with <a href="https://expo.dev">Expo</a> &amp; <a href="https://reactnative.dev">React Native</a></p>
+  </footer>
+
+</body>
+</html>
