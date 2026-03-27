@@ -3,19 +3,21 @@
  */
 
 import { useState, useMemo } from 'react';
-import { View, Text, StyleSheet, FlatList } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
 import { useTeamStore } from '../../stores/useTeamStore';
 import { useDataStore } from '../../stores/useDataStore';
 import { useSettingsStore } from '../../stores/useSettingsStore';
 import { useIndicatorStore } from '../../stores/useIndicatorStore';
 import { useWeightedProgress } from '../../hooks/useWeightedProgress';
 import { TeamDetailCard } from '../../components/teams/TeamDetailCard';
+import { TeamDetailModal } from '../../components/teams/TeamDetailModal';
 import {
   FilterDropdown,
   defaultFilterState,
   type FilterState,
 } from '../../components/teams/FilterDropdown';
 import type { TeamProgress } from '../../types/indicator';
+import { extractTeamDetail } from '../../services/schemaDetector';
 import { Colors } from '../../constants/colors';
 
 export default function TeamsScreen() {
@@ -24,6 +26,13 @@ export default function TeamsScreen() {
   const weights = useSettingsStore((s) => s.weights);
   const trackedIndicators = useIndicatorStore((s) => s.trackedIndicators);
   const [filterState, setFilterState] = useState<FilterState>(defaultFilterState);
+  const [selectedTeam, setSelectedTeam] = useState<TeamProgress | null>(null);
+
+  const selectedDetail = useMemo(() => {
+    if (!selectedTeam) return null;
+    const sheet = sheets[selectedTeam.teamId];
+    return sheet ? extractTeamDetail(sheet.table) : null;
+  }, [selectedTeam, sheets]);
 
   const progressData = useWeightedProgress(sheets, teams, weights, trackedIndicators);
 
@@ -103,13 +112,25 @@ export default function TeamsScreen() {
         data={filteredData}
         keyExtractor={(item: TeamProgress) => item.teamId}
         contentContainerStyle={styles.list}
-        renderItem={({ item }: { item: TeamProgress }) => <TeamDetailCard team={item} />}
+        renderItem={({ item }: { item: TeamProgress }) => (
+          <TouchableOpacity activeOpacity={0.85} onPress={() => setSelectedTeam(item)}>
+            <TeamDetailCard team={item} />
+          </TouchableOpacity>
+        )}
         ListEmptyComponent={
           <View style={styles.emptyList}>
             <Text style={styles.emptyListText}>无匹配结果</Text>
           </View>
         }
       />
+      {selectedTeam && (
+        <TeamDetailModal
+          visible={!!selectedTeam}
+          onClose={() => setSelectedTeam(null)}
+          team={selectedTeam}
+          detail={selectedDetail}
+        />
+      )}
     </View>
   );
 }

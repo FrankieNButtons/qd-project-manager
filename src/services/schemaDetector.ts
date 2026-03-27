@@ -14,7 +14,7 @@
  */
 
 import type { CellValue } from '../types/sheet';
-import type { TeamIndicator } from '../types/indicator';
+import type { TeamIndicator, TeamDetail, IndicatorDetail } from '../types/indicator';
 
 export type SheetSchema = 'tencent' | 'progressEval';
 
@@ -67,6 +67,58 @@ function extractProgressEval(table: CellValue[][]): TeamIndicator[] {
     const progress = target > 0 ? Math.min(target, currentMax) / target : 0;
     return { name, target, currentMax, progress };
   });
+}
+
+/**
+ * Extract rich team detail (lead, members, per-indicator notes) for progressEval sheets.
+ * Returns null for tencent schema or tables without the expected layout.
+ *
+ * 进度说明 columns: 7, 9, 11, ... (stride 2)  — text notes per quarter
+ * 完成情况 columns: 8, 10, 12, ... (stride 2)  — numeric completion per quarter
+ * Quarter label:    table[1][c] where c is the 进度说明 column
+ */
+export function extractTeamDetail(table: CellValue[][]): TeamDetail | null {
+  if (detectSchema(table) !== 'progressEval') return null;
+
+  const toStr = (v: CellValue): string | null => {
+    const s = String(v ?? '').trim();
+    return s.length > 0 ? s : null;
+  };
+
+  const lead = toStr(table[3]?.[2] ?? null);
+  const members = toStr(table[3]?.[3] ?? null);
+
+  const indicators: IndicatorDetail[] = table.slice(3).map((row) => {
+    const name = String(row[4] ?? '');
+    const target = Number(row[6] ?? 0);
+
+    // Latest 进度说明: scan cols 7, 9, 11, ... — take the rightmost non-empty string
+    let latestNote: string | null = null;
+    let latestPeriod: string | null = null;
+    for (let c = 7; c < row.length; c += 2) {
+      const note = toStr(row[c] ?? null);
+      if (note) {
+        latestNote = note;
+        latestPeriod = toStr(table[1]?.[c] ?? null);
+      }
+    }
+
+    // 完成情况: cols 8, 10, 12, ...
+    const completionValues: number[] = [];
+    for (let c = 8; c < row.length; c += 2) {
+      const v = row[c];
+      if (v === null || v === undefined || v === '') continue;
+      const n = Number(v);
+      if (isFinite(n)) completionValues.push(n);
+    }
+
+    const currentMax = completionValues.length > 0 ? Math.max(...completionValues) : 0;
+    const progress = target > 0 ? Math.min(target, currentMax) / target : 0;
+
+    return { name, target, currentMax, progress, latestNote, latestPeriod };
+  });
+
+  return { lead, members, indicators };
 }
 
 /**
