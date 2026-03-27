@@ -85,15 +85,19 @@ export function parseSheetData(response: OpendocResponse): SheetData {
   const decompressed = zlibDecompress(rawBytes);
   const message = decodeProto(decompressed);
 
-  // Navigate: message["1"]["5"][1]["19"]
+  // Navigate: message["1"]["5"][n]["19"]
+  // The index of the element containing field "19" varies by document structure
+  // (e.g. index 1 for simple sheets, index 22 for 23-column sheets), so we scan.
   const field5 = nav(message, '1', '5');
   const field5Arr = ensureArray(field5);
-  const field19 = nav(field5Arr[1], '19');
+  const field19 = field5Arr
+    .map((item) => nav(item, '19'))
+    .find((v) => v !== undefined);
   if (!field19) {
     throw new Error('Could not navigate to field19 in protobuf structure');
   }
 
-  // Extract text labels: field19["5"]["1"]
+  // Extract text labels: field19["5"]["1"] (used by cellType 4)
   const textLabelItems = ensureArray(nav(field19, '5', '1'));
   const textLabels: string[] = textLabelItems.map((item) => {
     const text = nav(item, '1');
@@ -107,6 +111,9 @@ export function parseSheetData(response: OpendocResponse): SheetData {
     if (typeof val === 'bigint') return bigintToDouble(val);
     return toNum(val);
   });
+
+  // Extract rich-text store: field19["5"]["2"] (used by cellType 6)
+  const textStore = ensureArray(nav(field19, '5', '2'));
 
   // Extract formula templates: field19["5"]["5"]
   const formulaTemplates = ensureArray(nav(field19, '5', '5'));
@@ -145,6 +152,14 @@ export function parseSheetData(response: OpendocResponse): SheetData {
         resolved = textLabels.length > 0 ? textLabels[0] : null;
       } else {
         resolved = `[label:${rawVal}]`;
+      }
+    } else if (cellType === 6) {
+      // Rich-text cell: index into field19["5"]["2"], text at entry["3"]["3"]["1"]
+      const idx = rawVal !== null ? rawVal : 0;
+      const entry = textStore[idx];
+      if (entry) {
+        const text = nav(entry, '3', '3', '1');
+        resolved = typeof text === 'string' ? text : null;
       }
     } else if (cellType === 5) {
       // Formula

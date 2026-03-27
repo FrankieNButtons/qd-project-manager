@@ -53,8 +53,10 @@ function tryDecodeMessage(buf: Uint8Array): ProtoMessage | null {
     // Sanity check: must have at least one numeric field key
     const keys = Object.keys(msg);
     if (keys.length === 0) return null;
-    // All keys should be numeric field numbers
-    if (!keys.every((k) => /^\d+$/.test(k))) return null;
+    // All keys must be valid protobuf field numbers (1 to 2^29 - 1 = 536870911).
+    // Values above this indicate a false positive — e.g. multi-byte UTF-8 text
+    // bytes being mis-decoded as a varint tag with an impossibly large field number.
+    if (!keys.every((k) => /^\d+$/.test(k) && Number(k) >= 1 && Number(k) <= 536870911)) return null;
     return msg;
   } catch {
     return null;

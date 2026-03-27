@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import type { TeamIndicator, IndicatorChangeEvent } from '../types/indicator';
 import type { SheetData } from '../types/sheet';
+import { extractIndicatorsBySchema } from '../services/schemaDetector';
 
 interface IndicatorState {
   trackedIndicators: string[];
@@ -17,18 +18,7 @@ interface IndicatorState {
 }
 
 export function extractIndicators(sheet: SheetData): TeamIndicator[] {
-  return sheet.table.slice(1).map((row) => {
-    const name = String(row[0] ?? '');
-    const target = Number(row[1] ?? 0);
-    const dateValues = row
-      .slice(2)
-      .filter((v) => v !== null && v !== undefined)
-      .map(Number)
-      .filter((n) => !isNaN(n));
-    const currentMax = dateValues.length > 0 ? Math.max(...dateValues) : 0;
-    const progress = target > 0 ? Math.min(target, currentMax) / target : 0;
-    return { name, target, currentMax, progress };
-  });
+  return extractIndicatorsBySchema(sheet.table);
 }
 
 function getIndicatorNames(sheet: SheetData): Set<string> {
