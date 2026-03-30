@@ -60,10 +60,10 @@
     .hero-inner { max-width: 800px; margin: 0 auto; position: relative; z-index: 1; }
 
     .hero-logo {
-      height: 64px;
+      height: 88px;
       width: auto;
-      max-width: min(80vw, 360px);
-      margin-bottom: 32px;
+      max-width: min(84vw, 460px);
+      margin-bottom: 28px;
       display: inline-block;
     }
 
@@ -343,6 +343,11 @@
 
     @media (max-width: 640px) {
       .hero { padding: 60px 20px 48px; }
+      .hero-logo {
+        height: 72px;
+        max-width: min(88vw, 320px);
+        margin-bottom: 24px;
+      }
       .phone-frame { width: 200px; }
       .features-grid { grid-template-columns: 1fr; }
     }
