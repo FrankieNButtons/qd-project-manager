@@ -52,7 +52,7 @@ function IndicatorDetailRow({
         <Text style={styles.noteText}>
           {indicator.latestNote}
           {indicator.latestPeriod ? (
-            <Text style={styles.periodText}>{` (${indicator.latestPeriod})`}</Text>
+            <Text style={styles.periodText}>{`（截至${indicator.latestPeriod}）`}</Text>
           ) : null}
         </Text>
       ) : null}
@@ -74,69 +74,80 @@ export function TeamDetailModal({ visible, onClose, team, detail }: Props) {
   const hasMetaInfo = !!(detail?.lead || detail?.members);
 
   return (
-    <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
-      <TouchableOpacity style={styles.overlay} activeOpacity={1} onPress={onClose} />
-      <View style={styles.sheet}>
-        <View style={styles.sheetHeader}>
-          <Text style={styles.sheetTitle} numberOfLines={1}>
-            {team.nickname}
-          </Text>
-          <TouchableOpacity onPress={onClose} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
-            <Text style={styles.closeBtn}>✕</Text>
-          </TouchableOpacity>
+    <Modal
+      visible={visible}
+      transparent
+      animationType="slide"
+      statusBarTranslucent
+      onRequestClose={onClose}
+    >
+      <View style={styles.container}>
+        <TouchableOpacity style={styles.backdrop} activeOpacity={1} onPress={onClose} />
+        <View style={styles.sheet}>
+          <View style={styles.sheetHeader}>
+            <Text style={styles.sheetTitle} numberOfLines={1}>
+              {team.nickname}
+            </Text>
+            <TouchableOpacity onPress={onClose} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+              <Text style={styles.closeBtn}>✕</Text>
+            </TouchableOpacity>
+          </View>
+
+          <ScrollView
+            style={styles.body}
+            contentContainerStyle={styles.bodyContent}
+            showsVerticalScrollIndicator={false}
+          >
+            {hasMetaInfo && (
+              <View style={styles.metaSection}>
+                {detail?.lead ? (
+                  <View style={styles.metaRow}>
+                    <Text style={styles.metaLabel}>负责人</Text>
+                    <Text style={styles.metaValue}>{detail.lead}</Text>
+                  </View>
+                ) : null}
+                {detail?.members ? (
+                  <View style={styles.metaRow}>
+                    <Text style={styles.metaLabel}>团队成员</Text>
+                    <Text style={styles.metaValue}>{detail.members}</Text>
+                  </View>
+                ) : null}
+              </View>
+            )}
+
+            {hasMetaInfo && <View style={styles.divider} />}
+
+            {indicators.map((ind, i) => {
+              const colorIndex = trackedIndicators.indexOf(ind.name);
+              return (
+                <IndicatorDetailRow
+                  key={ind.name}
+                  indicator={ind}
+                  colorIndex={colorIndex >= 0 ? colorIndex : i}
+                />
+              );
+            })}
+          </ScrollView>
         </View>
-
-        <ScrollView
-          style={styles.body}
-          contentContainerStyle={styles.bodyContent}
-          showsVerticalScrollIndicator={false}
-        >
-          {hasMetaInfo && (
-            <View style={styles.metaSection}>
-              {detail?.lead ? (
-                <View style={styles.metaRow}>
-                  <Text style={styles.metaLabel}>负责人</Text>
-                  <Text style={styles.metaValue}>{detail.lead}</Text>
-                </View>
-              ) : null}
-              {detail?.members ? (
-                <View style={styles.metaRow}>
-                  <Text style={styles.metaLabel}>团队成员</Text>
-                  <Text style={styles.metaValue}>{detail.members}</Text>
-                </View>
-              ) : null}
-            </View>
-          )}
-
-          {hasMetaInfo && <View style={styles.divider} />}
-
-          {indicators.map((ind, i) => {
-            const colorIndex = trackedIndicators.indexOf(ind.name);
-            return (
-              <IndicatorDetailRow
-                key={ind.name}
-                indicator={ind}
-                colorIndex={colorIndex >= 0 ? colorIndex : i}
-              />
-            );
-          })}
-        </ScrollView>
       </View>
     </Modal>
   );
 }
 
 const styles = StyleSheet.create({
-  overlay: {
+  container: {
     flex: 1,
+    justifyContent: 'flex-end',
     backgroundColor: 'rgba(0,0,0,0.5)',
   },
+  backdrop: StyleSheet.absoluteFillObject,
   sheet: {
     backgroundColor: Colors.surface,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
+    height: '82%',
     maxHeight: '82%',
-    paddingBottom: 32,
+    minHeight: 240,
   },
   sheetHeader: {
     flexDirection: 'row',
@@ -162,6 +173,7 @@ const styles = StyleSheet.create({
   },
   bodyContent: {
     padding: 16,
+    paddingBottom: 32,
     gap: 0,
   },
   metaSection: {

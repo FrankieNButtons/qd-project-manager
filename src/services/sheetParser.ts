@@ -84,6 +84,7 @@ export function parseSheetData(response: OpendocResponse): SheetData {
   const rawBytes = base64Decode(relatedSheetB64);
   const decompressed = zlibDecompress(rawBytes);
   const message = decodeProto(decompressed);
+  const rawText = new TextDecoder('utf-8', { fatal: false }).decode(decompressed);
 
   // Navigate: message["1"]["5"][n]["19"]
   // The index of the element containing field "19" varies by document structure
@@ -190,6 +191,7 @@ export function parseSheetData(response: OpendocResponse): SheetData {
     textLabels,
     doubles,
     table,
+    rawText,
     maxRow,
     maxCol,
   };

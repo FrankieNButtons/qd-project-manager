@@ -1,6 +1,6 @@
 {
   "name": "qd-projects-manager",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "main": "expo-router/entry",
   "scripts": {
     "start": "expo start",

@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import type { TeamIndicator, IndicatorChangeEvent } from '../types/indicator';
 import type { SheetData } from '../types/sheet';
-import { extractIndicatorsBySchema } from '../services/schemaDetector';
+import { extractSheetIndicators } from '../services/sheetFormatAdapter';
 
 interface IndicatorState {
   trackedIndicators: string[];
@@ -18,7 +18,7 @@ interface IndicatorState {
 }
 
 export function extractIndicators(sheet: SheetData): TeamIndicator[] {
-  return extractIndicatorsBySchema(sheet.table);
+  return extractSheetIndicators(sheet);
 }
 
 function getIndicatorNames(sheet: SheetData): Set<string> {

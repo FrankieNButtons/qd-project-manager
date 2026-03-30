@@ -5,6 +5,8 @@ export interface SheetData {
   textLabels: string[];
   doubles: number[];
   table: CellValue[][];
+  /** Best-effort UTF-8 view of the decoded sheet payload for format adapters. */
+  rawText?: string;
   maxRow: number;
   maxCol: number;
 }

@@ -2,7 +2,7 @@
   "expo": {
     "name": "QD Projects Manager",
     "slug": "qd-projects-manager",
-    "version": "0.1.0",
+    "version": "0.1.2",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -42,8 +42,9 @@
         "root": "src/app"
       },
       "eas": {
-        "projectId": "badd606e-3a8a-4f6c-b125-134143ea2852"
+        "projectId": "0f5a2ca6-4840-4f78-94bc-d8649bb96b16"
       }
-    }
+    },
+    "owner": "frankiebuttons"
   }
 }

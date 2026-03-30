@@ -17,7 +17,7 @@ import {
   type FilterState,
 } from '../../components/teams/FilterDropdown';
 import type { TeamProgress } from '../../types/indicator';
-import { extractTeamDetail } from '../../services/schemaDetector';
+import { extractSheetTeamDetail } from '../../services/sheetFormatAdapter';
 import { Colors } from '../../constants/colors';
 
 export default function TeamsScreen() {
@@ -31,7 +31,7 @@ export default function TeamsScreen() {
   const selectedDetail = useMemo(() => {
     if (!selectedTeam) return null;
     const sheet = sheets[selectedTeam.teamId];
-    return sheet ? extractTeamDetail(sheet.table) : null;
+    return sheet ? extractSheetTeamDetail(sheet) : null;
   }, [selectedTeam, sheets]);
 
   const progressData = useWeightedProgress(sheets, teams, weights, trackedIndicators);

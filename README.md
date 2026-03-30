@@ -70,18 +70,37 @@ Everything is logged in the **Message Center** (bell icon, top-right), with an u
 
 ## Spreadsheet format
 
-Your Tencent Docs spreadsheet should follow this structure:
+QD Projects Manager now keeps **sheet parsing**, **format adaptation**, and **UI display** separate:
+
+- `src/services/sheetParser.ts` decodes Tencent Docs `opendoc` payloads into generic `SheetData`.
+- `src/services/sheetFormatAdapter.ts` detects supported sheet templates and maps them into unified `TeamIndicator` and `TeamDetail` models.
+- Ranking, TeamCard rendering, and modal display consume only the normalized models, not raw table layouts.
+
+This keeps the original KPI-sheet parser stable while allowing new Tencent Docs templates to be adapted independently.
+
+### Template A — Standard KPI table
 
 | Indicator | Target | 2026-01 | 2026-02 | 2026-03 | ... |
 |-----------|--------|---------|---------|---------|-----|
 | Patents   | 200    | 5       | 10      | 20      | ... |
 | Partners  | 100    | 30      | 35      | 70      | ... |
 
-- **Column 1** — indicator name (must match across teams for cross-team comparison)
+- **Column 1** — indicator name
 - **Column 2** — target value
-- **Remaining** — actual values over time
+- **Remaining columns** — values over time
+- Progress uses the **maximum** value across all date columns: `min(max, target) / target`
 
-The app takes the **maximum value** across all date columns and computes progress as `min(max, target) / target`. Tracked indicators are the intersection of all teams' indicator names.
+### Template B — Progress evaluation sheet
+
+| Seq | Direction | Lead | Members | Task | Task Completion Goal | Target | 2026年3月 |  | 2026年6月 |  | ... |
+|-----|-----------|------|---------|------|----------------------|--------|-----------|--|-----------|--|-----|
+|     |           |      |         |      |                      |        | Progress Note | Completion | Progress Note | Completion | ... |
+| 1   | Big Data  | Alice | Team A | Task A | Deliverable text | 3 | Monthly narrative | 1 | Monthly narrative | 2 | ... |
+
+- Each period uses a merged month header plus two child columns: `Progress Note` and `Completion`
+- Team progress still uses the maximum numeric value across all `Completion` cells
+- TeamCard detail text uses the `Progress Note` paired with the **latest filled** `Completion` cell
+- If a task has no filled `Completion` cells yet, TeamCard displays `暂无进度`
 
 ---
 
@@ -113,6 +132,13 @@ npm install
 ---
 
 ## Changelog
+
+### v0.1.2 (2026-03-30)
+
+- Decoupled sheet format adaptation from Tencent Docs `opendoc` parsing via `src/services/sheetFormatAdapter.ts`
+- Added support for progress evaluation sheets with merged month headers and `Progress Note` / `Completion` pairs
+- Updated TeamCard detail extraction to use the note paired with the latest filled completion snapshot, with `暂无进度` fallback
+- Improved Android TeamCard modal layout so detail content renders reliably on phones
 
 ### v0.1.0 (2026-03-12)
 
