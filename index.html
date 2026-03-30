@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>QD Projects Manager</title>
   <meta name="description" content="Track multiple teams. Compare progress at a glance. Get notified when things change.">
-  <link rel="icon" href="assets/favicon.png">
+  <link rel="icon" href="assets/QDPMLOGO.png">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
@@ -59,7 +59,13 @@
 
     .hero-inner { max-width: 800px; margin: 0 auto; position: relative; z-index: 1; }
 
-    .hero-logo { height: 64px; margin-bottom: 32px; filter: brightness(0) invert(1); }
+    .hero-logo {
+      height: 64px;
+      width: auto;
+      max-width: min(80vw, 360px);
+      margin-bottom: 32px;
+      display: inline-block;
+    }
 
     .hero h1 {
       font-size: clamp(2rem, 5vw, 3.2rem);
