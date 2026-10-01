@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2048 866" fill="none">
+  <title>QD Projects Manager</title>
+  <rect width="2048" height="866" fill="#ffffff"/>
+  <svg x="20" y="0" width="980" height="866" viewBox="0 0 1024 1024">  <g transform="translate(0 79)">
+    <g fill="#123c6d">
+      <path d="M433 30C333 36 240 75 166 142L267 242C314 200 371 178 433 172Z"/>
+      <path d="M145 165C81 237 45 326 41 420H186C190 362 211 309 247 266Z"/>
+      <path d="M41 452C45 543 79 628 141 697L240 595C208 554 190 506 186 452Z"/>
+      <path d="M263 617 165 718C235 774 322 805 417 807V672C359 670 307 651 263 617Z"/>
+      <path d="M449 666V805C493 801 537 788 576 767L472 663Z"/>
+    </g>
+    <path d="M465 30C554 38 638 72 704 125L610 230C568 197 518 177 465 172Z" fill="#226ca8"/>
+    <path d="M728 148 634 252C667 287 689 329 701 375L798 240C780 207 756 176 728 148Z" fill="#fa9900"/>
+    <path d="M925 320 815 469C805 545 771 610 713 657L800 744C891 680 944 575 944 462C944 413 938 367 925 320Z" fill="#1887bf"/>
+    <path d="M925 320 815 469 813 487H941C948 432 940 375 925 320Z" fill="#19b4d9"/>
+    <path d="M518 466 601 350 665 346 675 410 585 532Z" fill="#fa9900"/>
+    <path d="M665 346 675 410 585 532 551 499Z" fill="#f58000"/>
+    <path d="M607 551 877 178 839 150 1010 75 992 261 954 234 674 619Z" fill="#19b4d9"/>
+    <path d="M1010 75 992 261 954 234 674 619 640 585Z" fill="#0b92cb"/>
+    <path d="M607 551 765 333 801 359 640 585Z" fill="#43a64b"/>
+    <path d="M640 585 801 359 835 388 674 619Z" fill="#069650"/>
+    <path d="M347 502H511L859 843H689Z" fill="#19b4d9"/>
+    <path d="M347 502H430L775 843H689Z" fill="#078bc1"/>
+    <path d="M347 502H511L567 558 484 639Z" fill="#fa9900"/>
+    <path d="M347 502H430L527 598 484 639Z" fill="#f58000"/>
+    <path d="M484 639 567 558 677 666 593 747Z" fill="#43a64b"/>
+    <path d="M484 639 527 598 635 706 593 747Z" fill="#069650"/>
+  </g>
+</svg>
+  <g fill="#123c6d" font-family="Arial Black, Arial, Helvetica, sans-serif" font-weight="900" letter-spacing="-5">
+    <text x="1060" y="365" font-size="380">QD</text>
+    <text x="1070" y="570" font-size="180">Projects</text>
+    <text x="1070" y="775" font-size="180">Manager</text>
+  </g>
+</svg>

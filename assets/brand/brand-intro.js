@@ -156,7 +156,7 @@
     });
 
     const reveal = smooth(phase(progress, .87, .98));
-    const shift = -lockup.clientWidth * .5;
+    const shift = -lockup.clientWidth * 514 / 866;
     lockup.style.transform = 'translate(calc(-50% + ' + shift * reveal + 'px), -50%)';
     wordmark.style.opacity = reveal;
     wordmark.style.transform = 'translate(' + mix(-65, 0, reveal) + 'px, -50%)';

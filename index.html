@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>QD Projects Manager</title>
   <meta name="description" content="Track multiple teams. Compare progress at a glance. Get notified when things change.">
-  <link rel="icon" href="assets/QDPMLOGO.png">
+  <link rel="icon" href="assets/brand/qd-mark.svg">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
@@ -442,14 +442,13 @@
     .is-complete .brand-ribbon, .is-complete .brand-stroke { will-change: auto; }
     .is-complete .brand-caption, .is-complete .brand-scroll, .is-complete .brand-skip { display: none; }
     @media (max-width: 640px) { .is-complete .brand-lockup { transform: translate(calc(-50% - 30vw), -50%) scale(.76); } }
-    /* Use the lettering from the original banner, preserving its exact glyphs. */
-    .brand-stage { --mark-size: min(42vw, 360px); }
+    /* Exact geometry and typography from the engineering branch qd-banner.svg. */
+    .brand-stage { --mark-size: min(35.5vw, 330px); }
     .brand-lockup { width: var(--mark-size); height: var(--mark-size); }
-    .brand-wordmark { left: calc(50% + var(--mark-size) * .035); width: calc(var(--mark-size) * .965); }
-    .brand-banner-type { display: block; width: 100%; height: auto; mix-blend-mode: multiply; }
-    .brand-wordmark { mix-blend-mode: multiply; }
+    .brand-wordmark { left: calc(50% + var(--mark-size) * .041570439); width: calc(var(--mark-size) * 1.140877598); }
+    .brand-banner-type { display: block; width: 100%; height: auto; }
     .brand-wordmark .brand-accessible-title { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
-    .is-complete .brand-lockup { transform: translate(calc(-50% - var(--mark-size) * .5), -50%); }
+    .is-complete .brand-lockup { transform: translate(calc(-50% - var(--mark-size) * .593533487), -50%); }
   </style>
 </head>
 <body>
@@ -459,7 +458,11 @@
       <div class="brand-eyebrow">QD / PROJECT MANAGER</div>
       <a class="brand-skip" href="#product">Skip intro ↘</a>
       <div class="brand-lockup" aria-hidden="true"><svg class="brand-mark" viewBox="0 0 1024 1024" fill="none"><g transform="translate(0 79)"><g class="brand-ribbon" data-side="left" fill="#123c6d"><path d="M433 30C333 36 240 75 166 142L267 242C314 200 371 178 433 172Z"/><path d="M145 165C81 237 45 326 41 420H186C190 362 211 309 247 266Z"/><path d="M41 452C45 543 79 628 141 697L240 595C208 554 190 506 186 452Z"/><path d="M263 617 165 718C235 774 322 805 417 807V672C359 670 307 651 263 617Z"/><path d="M449 666V805C493 801 537 788 576 767L472 663Z"/></g><g class="brand-ribbon" data-side="right"><path d="M465 30C554 38 638 72 704 125L610 230C568 197 518 177 465 172Z" fill="#226ca8"/><path d="M728 148 634 252C667 287 689 329 701 375L798 240C780 207 756 176 728 148Z" fill="#fa9900"/><path d="M925 320 815 469C805 545 771 610 713 657L800 744C891 680 944 575 944 462C944 413 938 367 925 320Z" fill="#1887bf"/><path d="M925 320 815 469 813 487H941C948 432 940 375 925 320Z" fill="#19b4d9"/></g><g class="brand-stroke" data-start=".63" data-end=".75" data-dx="-1" data-dy="1.38"><path d="M518 466 601 350 665 346 675 410 585 532Z" fill="#fa9900"/><path d="M665 346 675 410 585 532 551 499Z" fill="#f58000"/></g><g class="brand-stroke" data-start=".68" data-end=".80" data-dx="1" data-dy=".99"><path d="M347 502H511L859 843H689Z" fill="#19b4d9"/><path d="M347 502H430L775 843H689Z" fill="#078bc1"/><path d="M347 502H511L567 558 484 639Z" fill="#fa9900"/><path d="M347 502H430L527 598 484 639Z" fill="#f58000"/><path d="M484 639 567 558 677 666 593 747Z" fill="#43a64b"/><path d="M484 639 527 598 635 706 593 747Z" fill="#069650"/></g><g class="brand-stroke" data-start=".73" data-end=".86" data-dx="1" data-dy="-1.38"><path d="M607 551 877 178 839 150 1010 75 992 261 954 234 674 619Z" fill="#19b4d9"/><path d="M1010 75 992 261 954 234 674 619 640 585Z" fill="#0b92cb"/><path d="M607 551 765 333 801 359 640 585Z" fill="#43a64b"/><path d="M640 585 801 359 835 388 674 619Z" fill="#069650"/></g></g></svg></div>
-      <div class="brand-wordmark"><h2 class="brand-accessible-title">QD Projects Manager</h2><svg class="brand-banner-type" viewBox="1060 0 988 866" aria-hidden="true"><defs><filter id="banner-lettering" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="0 0 0 0 .0706 0 0 0 0 .2353 0 0 0 0 .4275 -.5 -1.2 -.3 0 1.5"/></filter></defs><image href="assets/QDPMLOGO.png" x="0" y="0" width="2048" height="866" preserveAspectRatio="none" filter="url(#banner-lettering)"/></svg></div>
+      <div class="brand-wordmark"><h2 class="brand-accessible-title">QD Projects Manager</h2><svg class="brand-banner-type" viewBox="1060 0 988 866" aria-hidden="true">  <g fill="#123c6d" font-family="Arial Black, Arial, Helvetica, sans-serif" font-weight="900" letter-spacing="-5">
+    <text x="1060" y="365" font-size="380">QD</text>
+    <text x="1070" y="570" font-size="180">Projects</text>
+    <text x="1070" y="775" font-size="180">Manager</text>
+  </g></svg></div>
       <div class="brand-caption">Independent pieces. One shared direction.</div>
       <div class="brand-scroll">SCROLL TO ASSEMBLE<span></span></div>
     </div>
@@ -467,7 +470,7 @@
   <!-- Hero -->
   <section class="hero" id="product"><nav class="site-nav" aria-label="Product navigation"><strong>QD<span style="color:#54c7df">.</span></strong><div><a href="#features">Features</a><a href="#get-started">Get started ↗</a></div></nav>
     <div class="hero-inner">
-      <img src="assets/QDPMLOGO.png" alt="QD Projects Manager" class="hero-logo">
+      <img src="assets/brand/qd-banner.svg" alt="QD Projects Manager" class="hero-logo">
       <div class="hero-kicker">Clarity in every direction</div><h1>Multi-team progress tracking,<br>automated.</h1>
       <p>Connect your Tencent Docs spreadsheets and get live dashboards, team rankings, and instant alerts — across Android, iOS, and Web.</p>
       <div class="hero-buttons">
