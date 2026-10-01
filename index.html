@@ -358,12 +358,12 @@
     .brand-stage::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 48%, #fff 0%, #f0f5fa 70%); z-index: -1; }
     .brand-lockup { position: absolute; left: 50%; top: 48%; width: min(25vw, 240px); height: min(25vw, 240px); transform: translate(-50%, -50%); will-change: transform; }
     .brand-mark { width: 100%; height: 100%; overflow: visible; }
-    .brand-piece { will-change: transform, opacity; }
+    .brand-ribbon, .brand-arrow, .brand-check { will-change: transform; }
     .brand-wordmark { position: absolute; left: calc(50% - 130px); top: 48%; transform: translateY(-50%); width: min(58vw, 650px); color: #123c6d; opacity: 0; }
     .brand-wordmark h2 { font-size: clamp(28px, 4.5vw, 68px); line-height: 1.12; letter-spacing: -.055em; font-weight: 700; white-space: nowrap; }
     .brand-wordmark h2 span { display: block; }
     .brand-wordmark p { font-size: clamp(11px, 1.1vw, 16px); letter-spacing: .17em; text-transform: uppercase; margin-top: 22px; color: #64809d; }
-    .brand-wordmark::after { content: ''; position: absolute; left: -28px; top: -20px; bottom: -20px; width: 44px; background: #f8fafc; filter: blur(14px); pointer-events: none; }
+    .brand-wordmark::after { content: ''; position: absolute; left: -28px; top: -20px; bottom: -20px; width: 44px; background: #f8fafc; filter: blur(14px); opacity: var(--edge-opacity, 1); pointer-events: none; }
     .brand-eyebrow { position: absolute; top: 38px; left: 42px; color: #123c6d; font-size: 12px; letter-spacing: .22em; font-weight: 600; }
     .brand-caption { position: absolute; bottom: 10%; left: 24px; right: 24px; text-align: center; color: #64809d; font-size: 13px; letter-spacing: .08em; }
     .brand-scroll { position: absolute; bottom: 36px; left: 50%; transform: translateX(-50%); color: #64809d; font-size: 10px; letter-spacing: .22em; text-align: center; }
@@ -433,6 +433,15 @@
     @keyframes float-ring { 50% { transform: translateY(24px) rotate(15deg); } }
     @media (max-width: 640px) { .hero { padding: 120px 22px 75px; } .hero p { font-size: 15px; } .site-nav { padding: 24px; } .site-nav a { margin-left: 16px; font-size: 11px; } .phone-row { gap: 30px; } .phone-frame { width: 210px; } .phone-frame:nth-child(n) { transform: none; } .screenshots, .features, .how-it-works { padding: 75px 24px; } }
     @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } *, *::before, *::after { animation: none !important; transition: none !important; } .reveal-ready { opacity: 1; transform: none; } }
+
+    .brand-intro.is-complete { height: 100svh; }
+    .is-complete .brand-stage { position: relative; }
+    .is-complete .brand-lockup { transform: translate(calc(-50% - min(26vw, 330px)), -50%) scale(.78); will-change: auto; }
+    .is-complete .brand-wordmark { opacity: 1; transform: translateY(-50%); filter: none; clip-path: none; }
+    .is-complete .brand-wordmark::after { display: none; }
+    .is-complete .brand-ribbon, .is-complete .brand-arrow, .is-complete .brand-check { will-change: auto; }
+    .is-complete .brand-caption, .is-complete .brand-scroll, .is-complete .brand-skip { display: none; }
+    @media (max-width: 640px) { .is-complete .brand-lockup { transform: translate(calc(-50% - 30vw), -50%) scale(.76); } }
   </style>
 </head>
 <body>
@@ -441,7 +450,7 @@
     <div class="brand-stage">
       <div class="brand-eyebrow">QD / PROJECT MANAGER</div>
       <a class="brand-skip" href="#product">Skip intro ↘</a>
-      <div class="brand-lockup" aria-hidden="true"><svg class="brand-mark" viewBox="0 0 1024 1024" fill="none"><g transform="translate(0 79)"><g class="brand-piece" data-index="0" fill="#123c6d"><path d="M433 30C333 36 240 75 166 142L267 242C314 200 371 178 433 172Z"/></g><g class="brand-piece" data-index="1" fill="#123c6d"><path d="M145 165C81 237 45 326 41 420H186C190 362 211 309 247 266Z"/></g><g class="brand-piece" data-index="2" fill="#123c6d"><path d="M41 452C45 543 79 628 141 697L240 595C208 554 190 506 186 452Z"/></g><g class="brand-piece" data-index="3" fill="#123c6d"><path d="M263 617 165 718C235 774 322 805 417 807V672C359 670 307 651 263 617Z"/></g><g class="brand-piece" data-index="4" fill="#123c6d"><path d="M449 666V805C493 801 537 788 576 767L472 663Z"/></g><g class="brand-piece" data-index="5" fill="#123c6d"><path d="M465 30C554 38 638 72 704 125L610 230C568 197 518 177 465 172Z" fill="#226ca8"/></g><g class="brand-piece" data-index="6" fill="#123c6d"><path d="M728 148 634 252C667 287 689 329 701 375L798 240C780 207 756 176 728 148Z" fill="#fa9900"/></g><g class="brand-piece" data-index="7" fill="#123c6d"><path d="M925 320 815 469C805 545 771 610 713 657L800 744C891 680 944 575 944 462C944 413 938 367 925 320Z" fill="#1887bf"/></g><g class="brand-piece" data-index="8" fill="#123c6d"><path d="M925 320 815 469 813 487H941C948 432 940 375 925 320Z" fill="#19b4d9"/></g><g class="brand-piece brand-arrow" data-index="9"><path d="M518 466 601 350 665 346 675 410 585 532Z" fill="#fa9900"/><path d="M665 346 675 410 585 532 551 499Z" fill="#f58000"/><path d="M607 551 877 178 839 150 1010 75 992 261 954 234 674 619Z" fill="#19b4d9"/><path d="M1010 75 992 261 954 234 674 619 640 585Z" fill="#0b92cb"/><path d="M607 551 765 333 801 359 640 585Z" fill="#43a64b"/><path d="M640 585 801 359 835 388 674 619Z" fill="#069650"/><path d="M347 502H511L859 843H689Z" fill="#19b4d9"/><path d="M347 502H430L775 843H689Z" fill="#078bc1"/><path d="M347 502H511L567 558 484 639Z" fill="#fa9900"/><path d="M347 502H430L527 598 484 639Z" fill="#f58000"/><path d="M484 639 567 558 677 666 593 747Z" fill="#43a64b"/><path d="M484 639 527 598 635 706 593 747Z" fill="#069650"/></g></g></svg></div>
+      <div class="brand-lockup" aria-hidden="true"><svg class="brand-mark" viewBox="0 0 1024 1024" fill="none"><g transform="translate(0 79)"><g class="brand-ribbon" data-side="left" fill="#123c6d"><path d="M433 30C333 36 240 75 166 142L267 242C314 200 371 178 433 172Z"/><path d="M145 165C81 237 45 326 41 420H186C190 362 211 309 247 266Z"/><path d="M41 452C45 543 79 628 141 697L240 595C208 554 190 506 186 452Z"/><path d="M263 617 165 718C235 774 322 805 417 807V672C359 670 307 651 263 617Z"/><path d="M449 666V805C493 801 537 788 576 767L472 663Z"/></g><g class="brand-ribbon" data-side="right"><path d="M465 30C554 38 638 72 704 125L610 230C568 197 518 177 465 172Z" fill="#226ca8"/><path d="M728 148 634 252C667 287 689 329 701 375L798 240C780 207 756 176 728 148Z" fill="#fa9900"/><path d="M925 320 815 469C805 545 771 610 713 657L800 744C891 680 944 575 944 462C944 413 938 367 925 320Z" fill="#1887bf"/><path d="M925 320 815 469 813 487H941C948 432 940 375 925 320Z" fill="#19b4d9"/></g><g class="brand-check"><path d="M518 466 601 350 665 346 675 410 585 532Z" fill="#fa9900"/><path d="M665 346 675 410 585 532 551 499Z" fill="#f58000"/><path d="M347 502H511L859 843H689Z" fill="#19b4d9"/><path d="M347 502H430L775 843H689Z" fill="#078bc1"/><path d="M347 502H511L567 558 484 639Z" fill="#fa9900"/><path d="M347 502H430L527 598 484 639Z" fill="#f58000"/><path d="M484 639 567 558 677 666 593 747Z" fill="#43a64b"/><path d="M484 639 527 598 635 706 593 747Z" fill="#069650"/></g><g class="brand-arrow"><path d="M607 551 877 178 839 150 1010 75 992 261 954 234 674 619Z" fill="#19b4d9"/><path d="M1010 75 992 261 954 234 674 619 640 585Z" fill="#0b92cb"/><path d="M607 551 765 333 801 359 640 585Z" fill="#43a64b"/><path d="M640 585 801 359 835 388 674 619Z" fill="#069650"/></g></g></svg></div>
       <div class="brand-wordmark"><h2><span>QD Project</span><span>Manager</span></h2><p>Every team. Moving forward.</p></div>
       <div class="brand-caption">Independent pieces. One shared direction.</div>
       <div class="brand-scroll">SCROLL TO ASSEMBLE<span></span></div>
@@ -577,74 +586,7 @@
   </footer>
 
 
-<script>
-(() => {
-  const intro = document.querySelector('.brand-intro');
-  const lockup = document.querySelector('.brand-lockup');
-  const wordmark = document.querySelector('.brand-wordmark');
-  const caption = document.querySelector('.brand-caption');
-  const hint = document.querySelector('.brand-scroll');
-  const pieces = [...document.querySelectorAll('.brand-piece')].map((element, index) => {
-    const box = element.getBBox();
-    return { element, index, x: box.x + box.width / 2, y: box.y + box.height / 2 };
-  });
-  const reduced = matchMedia('(prefers-reduced-motion: reduce)');
-  const clamp = value => Math.max(0, Math.min(1, value));
-  const ease = value => 1 - Math.pow(1 - value, 3);
-  const mix = (a, b, t) => a + (b - a) * t;
-  let progress = 0;
-  let frame = 0;
-  function render() {
-    const length = intro.offsetHeight - innerHeight;
-    const target = reduced.matches ? 1 : clamp(-intro.getBoundingClientRect().top / Math.max(1, length));
-    progress += (target - progress) * .14;
-    if (Math.abs(target - progress) < .0001) progress = target;
-    const reveal = ease(clamp((progress - .76) / .21));
-    const mobile = innerWidth <= 640;
-    const shift = mobile ? -innerWidth * .30 : -Math.min(innerWidth * .26, 330);
-    lockup.style.transform = 'translate(calc(-50% + ' + shift * reveal + 'px), -50%) scale(' + mix(1, mobile ? .76 : .78, reveal) + ')';
-    pieces.forEach(({ element, index, x, y }) => {
-      const arrow = index === 9;
-      const left = index < 5;
-      const side = left ? -1 : 1;
-      const order = left ? index : index - 5;
-      const t = clamp((progress - (arrow ? .57 : .025 + order * .033 + (left ? 0 : .10))) / (arrow ? .17 : .43));
-      let dx, dy, scale, angle;
-      if (arrow) {
-        const arrival = ease(t);
-        dx = mix(1700, 0, arrival); dy = mix(-1300, 0, arrival);
-        scale = mix(3.8, 1, arrival); angle = mix(-28, 0, arrival);
-      } else {
-        const flight = ease(clamp(t / .65));
-        const coil = ease(clamp((t - .40) / .60));
-        const trainX = side * (2700 + order * 330);
-        const trainY = (left ? 220 : -220) + Math.sin(order * .65) * 100;
-        const orbitAngle = (left ? Math.PI : 0) + order * .33 + coil * side * 1.2;
-        const orbitX = 512 + Math.cos(orbitAngle) * 450 - x;
-        const orbitY = 430 + Math.sin(orbitAngle) * 450 - y;
-        dx = mix(mix(trainX, orbitX, flight), 0, coil);
-        dy = mix(mix(trainY, orbitY, flight), 0, coil);
-        scale = mix(mix(6 - order * .65, 1.25, flight), 1, coil);
-        angle = mix(side * (65 + order * 24), 0, coil);
-      }
-      element.setAttribute('transform', 'translate(' + dx + ' ' + dy + ') translate(' + x + ' ' + y + ') rotate(' + angle + ') scale(' + scale + ') translate(' + -x + ' ' + -y + ')');
-      element.style.opacity = t === 0 ? '0' : String(clamp(t * 12));
-    });
-    wordmark.style.opacity = reveal;
-    wordmark.style.transform = 'translate(' + mix(-65, 0, reveal) + 'px, -50%)';
-    wordmark.style.filter = 'blur(' + mix(12, 0, reveal) + 'px)';
-    wordmark.style.clipPath = 'inset(0 ' + (1 - reveal) * 100 + '% 0 -40px)';
-    caption.style.opacity = 1 - reveal;
-    hint.style.opacity = 1 - clamp(progress / .15);
-    frame = Math.abs(target - progress) > .0001 ? requestAnimationFrame(render) : 0;
-  }
-  function update() { if (!frame) frame = requestAnimationFrame(render); }
-  addEventListener('scroll', update, { passive: true });
-  addEventListener('resize', update);
-  reduced.addEventListener('change', update);
-  render();
-})();
-</script>
+<script src="assets/brand/brand-intro.js"></script>
 <script>
 (() => {
   const reduced = matchMedia('(prefers-reduced-motion: reduce)');
