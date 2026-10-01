@@ -10,6 +10,7 @@
   const caption = intro.querySelector('.brand-caption');
   const hint = intro.querySelector('.brand-scroll');
   const reduced = matchMedia('(prefers-reduced-motion: reduce)');
+  if (!location.hash) scrollTo({ top: 0, behavior: 'instant' });
   const clamp = value => Math.max(0, Math.min(1, value));
   const mix = (a, b, t) => a + (b - a) * t;
   const easeOut = t => 1 - Math.pow(1 - t, 3);
