@@ -357,9 +357,11 @@
     }
 
     /* Scroll-driven brand opening. All artwork retains the original SVG geometry. */
-    .brand-intro { height: 520svh; position: relative; background: #f8fafc; }
-    .brand-stage { position: sticky; top: 0; height: 100svh; overflow: hidden; display: grid; place-items: center; isolation: isolate; }
-    .brand-stage::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 48%, #fff 0%, #f0f5fa 70%); z-index: -1; }
+    .brand-intro { position: relative; background: #f8fafc; }
+    .brand-intro::after { content: ''; display: block; height: 420svh; }
+    .brand-stage { position: sticky; top: 0; isolation: isolate; }
+    .brand-stage::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 100svh; background: radial-gradient(ellipse at 50% 48%, #fff 0%, #f0f5fa 70%); z-index: -1; }
+    .brand-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100svh; overflow: hidden; z-index: 3; }
     .brand-lockup { position: absolute; left: 50%; top: 48%; width: min(25vw, 240px); height: min(25vw, 240px); transform: translate(-50%, -50%); will-change: transform; }
     .brand-mark { width: 100%; height: 100%; overflow: visible; }
     .brand-ribbon, .brand-stroke { will-change: transform; }
@@ -381,8 +383,6 @@
       .brand-eyebrow { left: 20px; top: 28px; font-size: 10px; }
       .brand-skip { top: 21px; right: 18px; }
     }
-    @media (prefers-reduced-motion: reduce) { .brand-intro { height: 100svh; } }
-    @media (scripting: none) { .brand-intro { display: none; } }
 
     :root { --bg: #f8fafc; --text: #123c6d; --text-secondary: #69819b; --border: #e1eaf2; --radius: 24px; }
     body { overflow-x: hidden; }
@@ -438,27 +438,18 @@
     @media (max-width: 640px) { .hero { padding: 120px 22px 75px; } .hero p { font-size: 15px; } .site-nav { padding: 24px; } .site-nav a { margin-left: 16px; font-size: 11px; } .phone-row { gap: 30px; } .phone-frame { width: 210px; } .phone-frame:nth-child(n) { transform: none; } .screenshots, .features, .how-it-works { padding: 75px 24px; } }
     @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } *, *::before, *::after { animation: none !important; transition: none !important; } .reveal-ready { opacity: 1; transform: none; } }
 
-    .brand-intro.is-complete { height: 100svh; }
-    .is-complete .brand-stage { position: relative; }
-    .is-complete .brand-lockup { transform: translate(calc(-50% - min(26vw, 330px)), -50%) scale(.78); will-change: auto; }
-    .is-complete .brand-wordmark { opacity: 1; transform: translateY(-50%); filter: none; clip-path: none; }
-    .is-complete .brand-wordmark::after { display: none; }
-    .is-complete .brand-ribbon, .is-complete .brand-stroke { will-change: auto; }
-    .is-complete .brand-caption, .is-complete .brand-scroll, .is-complete .brand-skip { display: none; }
-    @media (max-width: 640px) { .is-complete .brand-lockup { transform: translate(calc(-50% - 30vw), -50%) scale(.76); } }
     /* Exact geometry and typography from the engineering branch qd-banner.svg. */
     .brand-stage { --mark-size: min(35.5vw, 330px); }
     .brand-lockup { width: var(--mark-size); height: var(--mark-size); }
     .brand-wordmark { left: calc(50% + var(--mark-size) * .041570439); width: calc(var(--mark-size) * 1.140877598); }
     .brand-banner-type { display: block; width: 100%; height: auto; }
     .brand-wordmark .brand-accessible-title { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
-    .is-complete .brand-lockup { transform: translate(calc(-50% - var(--mark-size) * .593533487), -50%); }
-    /* The assembled artwork docks into the product hero, then retires. */
+    /* Artwork and hero share one sticky stage, then leave the viewport together. */
     .brand-stage { z-index: 3; }
     .brand-stage::before { opacity: var(--intro-background, 1); }
     .brand-artwork { position: absolute; inset: 0; transform-origin: 50% 48%; pointer-events: none; }
-    .brand-intro.is-docking .brand-stage { pointer-events: none; }
-    .brand-intro.is-docking .brand-eyebrow, .brand-intro.is-docking .brand-actions { opacity: var(--intro-background, 1); }
+    .brand-intro.is-docking .brand-overlay { pointer-events: none; }
+    .brand-intro .brand-eyebrow, .brand-intro .brand-actions { opacity: var(--intro-ui-opacity, 1); }
     .hero { background: radial-gradient(ellipse at 50% 15%, #fff, #edf5fa); color: #123c6d; padding-top: 104px; }
     .hero::before { background: radial-gradient(ellipse at 80% 70%, #19b4d910, transparent 60%); }
     .hero p { color: #64809d; }
@@ -467,8 +458,22 @@
     .hero .btn-outline:hover { border-color: #1887bf; }
     .hero-brand-slot { width: min(100%, 560px); aspect-ratio: 2048 / 866; margin: 0 auto 32px; }
     .hero-banner { display: block; width: 100%; height: 100%; }
-    .hero.is-docking { position: fixed; inset: 0 0 auto; z-index: 2; width: 100%; opacity: var(--dock-opacity, 0); transform: translateY(var(--dock-offset, 90px)); }
-    .hero.is-docking .hero-banner { visibility: hidden; }
+    .brand-intro .hero { opacity: var(--hero-opacity, 0); visibility: hidden; }
+    .brand-intro.is-docking .hero { visibility: visible; }
+    .brand-intro .site-nav, .brand-intro .hero-inner > :not(.hero-brand-slot) { opacity: var(--hero-copy-opacity, 0); }
+    .brand-intro .hero-banner { visibility: hidden; }
+    .brand-intro.is-assembled .hero-banner { visibility: visible; }
+    .brand-intro.is-assembled .brand-overlay { visibility: hidden; pointer-events: none; }
+    .brand-intro.is-skipped::after { display: none; }
+    .brand-intro.is-skipped .brand-stage { position: relative; }
+    @media (prefers-reduced-motion: reduce), (scripting: none) {
+      .brand-intro::after { display: none; }
+      .brand-stage { position: relative; }
+      .brand-overlay { display: none; }
+      .brand-intro .hero { visibility: visible; opacity: 1; }
+      .brand-intro .hero-banner { visibility: visible; }
+      .brand-intro .site-nav, .brand-intro .hero-inner > :not(.hero-brand-slot) { opacity: 1; }
+    }
     @media (max-width: 640px) { .hero { padding-top: 92px; } .hero-brand-slot { width: min(100%, 390px); margin-bottom: 28px; } }
     /* Native language controls remain available before and after the intro. */
     .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
@@ -495,6 +500,7 @@
 
 <section class="brand-intro" data-i18n-aria-label="introLabel" aria-label="QD Projects Manager brand introduction">
     <div class="brand-stage">
+      <div class="brand-overlay">
       <div class="brand-eyebrow">QD / PROJECT MANAGER</div>
       <div class="brand-actions"><label class="language-switch" hidden><span class="sr-only" data-i18n="language">Language</span><select data-language-select data-i18n-aria-label="language" aria-label="Language"><option value="zh-Hans" lang="zh-Hans">简体中文</option><option value="zh-Hant" lang="zh-Hant">繁體中文</option><option value="en" lang="en">English</option></select></label><a data-i18n="skip" class="brand-skip" href="#product">Skip intro ↘</a></div>
       <div class="brand-artwork"><div class="brand-lockup" aria-hidden="true"><svg class="brand-mark" viewBox="0 0 1024 1024" fill="none"><g transform="translate(0 79)"><g class="brand-ribbon" data-side="left" fill="#123c6d"><path d="M433 30C333 36 240 75 166 142L267 242C314 200 371 178 433 172Z"/><path d="M145 165C81 237 45 326 41 420H186C190 362 211 309 247 266Z"/><path d="M41 452C45 543 79 628 141 697L240 595C208 554 190 506 186 452Z"/><path d="M263 617 165 718C235 774 322 805 417 807V672C359 670 307 651 263 617Z"/><path d="M449 666V805C493 801 537 788 576 767L472 663Z"/></g><g class="brand-ribbon" data-side="right"><path d="M465 30C554 38 638 72 704 125L610 230C568 197 518 177 465 172Z" fill="#226ca8"/><path d="M728 148 634 252C667 287 689 329 701 375L798 240C780 207 756 176 728 148Z" fill="#fa9900"/><path d="M925 320 815 469C805 545 771 610 713 657L800 744C891 680 944 575 944 462C944 413 938 367 925 320Z" fill="#1887bf"/><path d="M925 320 815 469 813 487H941C948 432 940 375 925 320Z" fill="#19b4d9"/></g><g class="brand-stroke" data-start=".63" data-end=".75" data-dx="1" data-dy="-1.38"><path d="M518 466 601 350 665 346 675 410 585 532Z" fill="#fa9900"/><path d="M665 346 675 410 585 532 551 499Z" fill="#f58000"/></g><g class="brand-stroke" data-start=".68" data-end=".80" data-dx="-345" data-dy="-341"><path d="M347 502H511L859 843H689Z" fill="#19b4d9"/><path d="M347 502H430L775 843H689Z" fill="#078bc1"/><path d="M347 502H511L567 558 484 639Z" fill="#fa9900"/><path d="M347 502H430L527 598 484 639Z" fill="#f58000"/><path d="M484 639 567 558 677 666 593 747Z" fill="#43a64b"/><path d="M484 639 527 598 635 706 593 747Z" fill="#069650"/></g><g class="brand-stroke" data-start=".73" data-end=".86" data-dx="1" data-dy="-1.38"><path d="M607 551 877 178 839 150 1010 75 992 261 954 234 674 619Z" fill="#19b4d9"/><path d="M1010 75 992 261 954 234 674 619 640 585Z" fill="#0b92cb"/><path d="M607 551 765 333 801 359 640 585Z" fill="#43a64b"/><path d="M640 585 801 359 835 388 674 619Z" fill="#069650"/></g></g></svg></div>
@@ -505,8 +511,7 @@
   </g></svg></div></div>
       <div data-i18n="caption" class="brand-caption">Independent pieces. One shared direction.</div>
       <div class="brand-scroll"><span class="brand-scroll-label" data-i18n="scroll">SCROLL TO ASSEMBLE</span><span class="brand-scroll-line" aria-hidden="true"></span></div>
-    </div>
-  </section>
+      </div>
   <!-- Hero -->
   <section class="hero" id="product"><nav class="site-nav" data-i18n-aria-label="navigationLabel" aria-label="Product navigation"><strong>QD<span style="color:#54c7df">.</span></strong><div class="nav-actions"><a data-i18n="navFeatures" href="#features">Features</a><a data-i18n="navStart" href="#get-started">Get started ↗</a><label class="language-switch" hidden><span class="sr-only" data-i18n="language">Language</span><select data-language-select data-i18n-aria-label="language" aria-label="Language"><option value="zh-Hans" lang="zh-Hans">简体中文</option><option value="zh-Hant" lang="zh-Hant">繁體中文</option><option value="en" lang="en">English</option></select></label></div></nav>
     <div class="hero-inner">
@@ -554,6 +559,8 @@
         </a>
         <a data-i18n="getStarted" href="#get-started" class="btn btn-outline">Get Started</a>
       </div>
+    </div>
+  </section>
     </div>
   </section>
 

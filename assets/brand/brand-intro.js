@@ -4,6 +4,7 @@
   const wordmark = intro.querySelector('.brand-wordmark');
   const artwork = intro.querySelector('.brand-artwork');
   const stage = intro.querySelector('.brand-stage');
+  const overlay = intro.querySelector('.brand-overlay');
   const hero = document.querySelector('#product');
   const slot = hero.querySelector('.hero-brand-slot');
   const strokes = [...intro.querySelectorAll('.brand-stroke')];
@@ -91,10 +92,11 @@
     });
     return { side, paths, rail: makeRail(side) };
   });
-  let progress = 0;
   let frame = 0;
-  let complete = false;
-  let previousTime = 0;
+  let skipped = false;
+  let assembled = false;
+  let needsMeasure = true;
+  let geometry;
 
   function drawRibbon(ribbon, p) {
     const delay = ribbon.side === 1 ? .065 : 0;
@@ -117,53 +119,69 @@
     });
   }
 
-  function finish() {
-    complete = true;
+  function skipIntro() {
+    if (skipped) return;
+    skipped = true;
     cancelAnimationFrame(frame);
     frame = 0;
-    const hadFocus = intro.contains(document.activeElement);
-    hero.classList.remove('is-docking');
-    hero.style.removeProperty('--dock-opacity');
-    hero.style.removeProperty('--dock-offset');
-    intro.remove();
-    // The hero is now the first ordinary flow section. The static SVG occupies
-    // exactly the rectangle reached by the animated artwork on the last frame.
+    const hadFocus = overlay.contains(document.activeElement);
+    intro.classList.add('is-skipped', 'is-docking', 'is-assembled');
+    stage.style.setProperty('--intro-background', 0);
+    stage.style.setProperty('--hero-opacity', 1);
+    stage.style.setProperty('--hero-copy-opacity', 1);
+    hero.inert = false;
     const anchor = location.hash && document.getElementById(location.hash.slice(1));
-    scrollTo({ top: anchor ? anchor.offsetTop : 0, behavior: 'instant' });
+    (anchor || hero).scrollIntoView({ behavior: 'instant', block: 'start' });
     if (hadFocus) {
       hero.setAttribute('tabindex', '-1');
       hero.focus({ preventScroll: true });
     }
     removeEventListener('scroll', update);
     removeEventListener('resize', update);
+    removeEventListener('hashchange', onHashChange);
+    removeEventListener('wheel', guardScroll);
     reduced.removeEventListener('change', update);
+    observer.disconnect();
   }
 
-  function dockBanner(amount) {
-    intro.classList.toggle('is-docking', amount > 0);
-    hero.classList.toggle('is-docking', amount > 0);
-    stage.style.setProperty('--intro-background', 1 - amount);
-    if (!amount) { artwork.style.removeProperty('transform'); return; }
-    hero.style.setProperty('--dock-opacity', amount);
-    hero.style.setProperty('--dock-offset', (1 - amount) * 90 + 'px');
+  function measure() {
     const destination = slot.getBoundingClientRect();
     const viewport = stage.getBoundingClientRect();
-    const originX = viewport.left + viewport.width * .5;
-    const originY = viewport.top + viewport.height * .48;
-    const dx = destination.left + destination.width / 2 - originX;
-    const dy = destination.top + destination.height / 2 - originY;
-    const scale = destination.height / lockup.clientWidth;
-    artwork.style.transform = 'translate(' + dx * amount + 'px, ' + dy * amount + 'px) scale(' + mix(1, scale, amount) + ')';
+    const markSize = parseFloat(getComputedStyle(lockup).width);
+    geometry = {
+      length: Math.max(1, intro.getBoundingClientRect().height - viewport.height),
+      markSize,
+      dx: destination.left + destination.width / 2 - viewport.left - viewport.width / 2,
+      dy: destination.top + destination.height / 2 - viewport.top - overlay.offsetHeight * .48,
+      scale: destination.height / markSize,
+    };
+    needsMeasure = false;
   }
 
-  function render(time = performance.now()) {
-    if (complete) return;
-    const length = intro.offsetHeight - innerHeight;
-    const target = reduced.matches ? 1 : clamp(-intro.getBoundingClientRect().top / Math.max(1, length));
-    const delta = previousTime ? Math.min(64, time - previousTime) : 16;
-    previousTime = time;
-    progress += (target - progress) * (1 - Math.exp(-delta / 75));
-    if (Math.abs(target - progress) < .0001) progress = target;
+  function dockBanner(amount, contentReveal) {
+    intro.classList.toggle('is-docking', amount > 0);
+    intro.classList.toggle('is-assembled', amount === 1);
+    hero.inert = contentReveal === 0;
+    stage.style.setProperty('--intro-background', 1 - amount);
+    stage.style.setProperty('--hero-opacity', amount);
+    stage.style.setProperty('--hero-copy-opacity', contentReveal);
+    if (!amount) { artwork.style.removeProperty('transform'); return; }
+    artwork.style.transform = 'translate(' + geometry.dx * amount + 'px, ' + geometry.dy * amount + 'px) scale(' + mix(1, geometry.scale, amount) + ')';
+  }
+
+  function render() {
+    frame = 0;
+    if (skipped) return;
+    if (reduced.matches) { skipIntro(); return; }
+    if (needsMeasure) measure();
+    // Latch at the end once. Keep the runway intact and clamp reverse scrolling
+    // at the product's top, so neither momentum nor a return gesture replays it.
+    const distance = -intro.getBoundingClientRect().top;
+    if (distance >= geometry.length - .5) assembled = true;
+    if (assembled && distance < geometry.length) {
+      scrollTo({ top: scrollY + geometry.length - distance, behavior: 'instant' });
+    }
+    const progress = assembled ? 1 : clamp(distance / geometry.length);
     const assembly = clamp(progress / .77);
     ribbons.forEach(ribbon => drawRibbon(ribbon, assembly));
 
@@ -181,7 +199,7 @@
     });
 
     const reveal = smooth(phase(assembly, .87, .98));
-    const shift = -lockup.clientWidth * 514 / 866;
+    const shift = -geometry.markSize * 514 / 866;
     lockup.style.transform = 'translate(calc(-50% + ' + shift * reveal + 'px), -50%)';
     wordmark.style.opacity = reveal;
     wordmark.style.transform = 'translate(' + mix(-65, 0, reveal) + 'px, -50%)';
@@ -190,17 +208,36 @@
     wordmark.style.setProperty('--edge-opacity', 1 - smooth(phase(reveal, .65, 1)));
     caption.style.opacity = 1 - reveal;
     hint.style.opacity = 1 - phase(progress, 0, .12);
-    const docking = smooth(phase(progress, .80, 1));
-    dockBanner(docking);
-    if ((target === 1 && progress === 1) || reduced.matches) { finish(); return; }
-    frame = Math.abs(target - progress) > .0001 ? requestAnimationFrame(render) : 0;
+    stage.style.setProperty('--intro-ui-opacity', 1 - smooth(phase(progress, .74, .82)));
+    const docking = smooth(phase(progress, .80, .92));
+    const contentReveal = smooth(phase(progress, .89, .985));
+    dockBanner(docking, contentReveal);
   }
 
-  function update() {
-    if (!frame && !complete) { previousTime = 0; frame = requestAnimationFrame(render); }
+  function update(event) {
+    if (event?.type === 'resize') needsMeasure = true;
+    if (!frame && !skipped) frame = requestAnimationFrame(render);
   }
+  function onHashChange() {
+    if (location.hash && document.getElementById(location.hash.slice(1))) skipIntro();
+  }
+  function guardScroll(event) {
+    if (!assembled || skipped || event.ctrlKey || event.deltaY >= 0) return;
+    if (needsMeasure) measure();
+    const remaining = -intro.getBoundingClientRect().top - geometry.length;
+    const delta = event.deltaY * (event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? innerHeight : 1);
+    if (remaining + delta < 0 && event.cancelable) {
+      event.preventDefault();
+      if (remaining > 0) scrollTo({ top: scrollY - remaining, behavior: 'instant' });
+    }
+  }
+  const observer = new ResizeObserver(() => { needsMeasure = true; update(); });
+  [stage, overlay, slot].forEach(element => observer.observe(element));
   addEventListener('scroll', update, { passive: true });
   addEventListener('resize', update);
+  addEventListener('hashchange', onHashChange);
+  addEventListener('wheel', guardScroll, { passive: false });
   reduced.addEventListener('change', update);
-  render();
+  if (location.hash && document.getElementById(location.hash.slice(1))) skipIntro();
+  else render();
 })();
