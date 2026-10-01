@@ -2,6 +2,10 @@
   const intro = document.querySelector('.brand-intro');
   const lockup = intro.querySelector('.brand-lockup');
   const wordmark = intro.querySelector('.brand-wordmark');
+  const artwork = intro.querySelector('.brand-artwork');
+  const stage = intro.querySelector('.brand-stage');
+  const hero = document.querySelector('#product');
+  const slot = hero.querySelector('.hero-brand-slot');
   const strokes = [...intro.querySelectorAll('.brand-stroke')];
   const caption = intro.querySelector('.brand-caption');
   const hint = intro.querySelector('.brand-scroll');
@@ -116,20 +120,39 @@
     complete = true;
     cancelAnimationFrame(frame);
     frame = 0;
-    const oldHeight = intro.offsetHeight;
-    const oldScroll = scrollY;
-    intro.classList.add('is-complete');
-    ribbons.forEach(ribbon => ribbon.paths.forEach(({ element, original }) => element.setAttribute('d', original)));
-    [lockup, wordmark, ...strokes].forEach(element => element.removeAttribute('style'));
-    strokes.forEach(element => element.removeAttribute('transform'));
-    // Retire the pinned scroll runway while keeping the current viewport stable.
-    const removedHeight = oldHeight - intro.offsetHeight;
-    if (removedHeight > 0 && oldScroll > intro.offsetTop) {
-      scrollTo({ top: Math.max(intro.offsetTop, oldScroll - removedHeight), behavior: 'instant' });
+    const hadFocus = intro.contains(document.activeElement);
+    hero.classList.remove('is-docking');
+    hero.style.removeProperty('--dock-opacity');
+    hero.style.removeProperty('--dock-offset');
+    intro.remove();
+    // The hero is now the first ordinary flow section. The static SVG occupies
+    // exactly the rectangle reached by the animated artwork on the last frame.
+    const anchor = location.hash && document.getElementById(location.hash.slice(1));
+    scrollTo({ top: anchor ? anchor.offsetTop : 0, behavior: 'instant' });
+    if (hadFocus) {
+      hero.setAttribute('tabindex', '-1');
+      hero.focus({ preventScroll: true });
     }
     removeEventListener('scroll', update);
     removeEventListener('resize', update);
     reduced.removeEventListener('change', update);
+  }
+
+  function dockBanner(amount) {
+    intro.classList.toggle('is-docking', amount > 0);
+    hero.classList.toggle('is-docking', amount > 0);
+    stage.style.setProperty('--intro-background', 1 - amount);
+    if (!amount) { artwork.style.removeProperty('transform'); return; }
+    hero.style.setProperty('--dock-opacity', amount);
+    hero.style.setProperty('--dock-offset', (1 - amount) * 90 + 'px');
+    const destination = slot.getBoundingClientRect();
+    const viewport = stage.getBoundingClientRect();
+    const originX = viewport.left + viewport.width * .5;
+    const originY = viewport.top + viewport.height * .48;
+    const dx = destination.left + destination.width / 2 - originX;
+    const dy = destination.top + destination.height / 2 - originY;
+    const scale = destination.height / lockup.clientWidth;
+    artwork.style.transform = 'translate(' + dx * amount + 'px, ' + dy * amount + 'px) scale(' + mix(1, scale, amount) + ')';
   }
 
   function render(time = performance.now()) {
@@ -140,22 +163,23 @@
     previousTime = time;
     progress += (target - progress) * (1 - Math.exp(-delta / 75));
     if (Math.abs(target - progress) < .0001) progress = target;
-    ribbons.forEach(ribbon => drawRibbon(ribbon, progress));
+    const assembly = clamp(progress / .77);
+    ribbons.forEach(ribbon => drawRibbon(ribbon, assembly));
 
-    // Each straight component advances along its own long axis, including
-    // the short orange leg; no assembled checkmark is pasted into position.
+    // Each direction vector follows its component's long axis from bottom
+    // to top (negative SVG y). Start behind that vector and advance to zero.
     strokes.forEach(element => {
       const start = Number(element.dataset.start);
       const end = Number(element.dataset.end);
-      const arrival = easeOut(phase(progress, start, end));
+      const arrival = easeOut(phase(assembly, start, end));
       const dx = Number(element.dataset.dx);
       const dy = Number(element.dataset.dy);
       const distance = (1 - arrival) * 4200 / Math.hypot(dx, dy);
       element.setAttribute('transform', 'translate(' + -dx * distance + ' ' + -dy * distance + ')');
-      element.style.opacity = progress < start ? '0' : '1';
+      element.style.opacity = assembly < start ? '0' : '1';
     });
 
-    const reveal = smooth(phase(progress, .87, .98));
+    const reveal = smooth(phase(assembly, .87, .98));
     const shift = -lockup.clientWidth * 514 / 866;
     lockup.style.transform = 'translate(calc(-50% + ' + shift * reveal + 'px), -50%)';
     wordmark.style.opacity = reveal;
@@ -165,7 +189,9 @@
     wordmark.style.setProperty('--edge-opacity', 1 - smooth(phase(reveal, .65, 1)));
     caption.style.opacity = 1 - reveal;
     hint.style.opacity = 1 - phase(progress, 0, .12);
-    if (progress >= .985 || reduced.matches) { finish(); return; }
+    const docking = smooth(phase(progress, .80, 1));
+    dockBanner(docking);
+    if ((target === 1 && progress === 1) || reduced.matches) { finish(); return; }
     frame = Math.abs(target - progress) > .0001 ? requestAnimationFrame(render) : 0;
   }
 

@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>QD Projects Manager</title>
-  <meta name="description" content="Track multiple teams. Compare progress at a glance. Get notified when things change.">
+  <title data-i18n="pageTitle">QD Projects Manager · Multi-team progress tracking</title>
+  <meta data-i18n-content="description" name="description" content="Track multiple teams. Compare progress at a glance. Get notified when things change.">
   <link rel="icon" href="assets/brand/qd-mark.svg">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
@@ -353,7 +353,7 @@
     }
 
     /* Scroll-driven brand opening. All artwork retains the original SVG geometry. */
-    .brand-intro { height: 440svh; position: relative; background: #f8fafc; }
+    .brand-intro { height: 520svh; position: relative; background: #f8fafc; }
     .brand-stage { position: sticky; top: 0; height: 100svh; overflow: hidden; display: grid; place-items: center; isolation: isolate; }
     .brand-stage::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 48%, #fff 0%, #f0f5fa 70%); z-index: -1; }
     .brand-lockup { position: absolute; left: 50%; top: 48%; width: min(25vw, 240px); height: min(25vw, 240px); transform: translate(-50%, -50%); will-change: transform; }
@@ -367,7 +367,7 @@
     .brand-eyebrow { position: absolute; top: 38px; left: 42px; color: #123c6d; font-size: 12px; letter-spacing: .22em; font-weight: 600; }
     .brand-caption { position: absolute; bottom: 10%; left: 24px; right: 24px; text-align: center; color: #64809d; font-size: 13px; letter-spacing: .08em; }
     .brand-scroll { position: absolute; bottom: 36px; left: 50%; transform: translateX(-50%); color: #64809d; font-size: 10px; letter-spacing: .22em; text-align: center; }
-    .brand-scroll span { display: block; height: 32px; width: 1px; margin: 12px auto 0; background: linear-gradient(#64809d, transparent); }
+    .brand-scroll-line { display: block; height: 32px; width: 1px; margin: 12px auto 0; background: linear-gradient(#64809d, transparent); }
     .brand-skip { position: absolute; top: 31px; right: 36px; padding: 7px 12px; font-size: 12px; color: #64809d; text-decoration: none; border: 1px solid #dce5ee; border-radius: 30px; }
     @media (max-width: 640px) {
       .brand-lockup { width: 112px; height: 112px; }
@@ -449,65 +449,135 @@
     .brand-banner-type { display: block; width: 100%; height: auto; }
     .brand-wordmark .brand-accessible-title { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
     .is-complete .brand-lockup { transform: translate(calc(-50% - var(--mark-size) * .593533487), -50%); }
+    /* The assembled artwork docks into the product hero, then retires. */
+    .brand-stage { z-index: 3; }
+    .brand-stage::before { opacity: var(--intro-background, 1); }
+    .brand-artwork { position: absolute; inset: 0; transform-origin: 50% 48%; pointer-events: none; }
+    .brand-intro.is-docking .brand-stage { pointer-events: none; }
+    .brand-intro.is-docking .brand-eyebrow, .brand-intro.is-docking .brand-actions { opacity: var(--intro-background, 1); }
+    .hero { background: radial-gradient(ellipse at 50% 15%, #fff, #edf5fa); color: #123c6d; padding-top: 104px; }
+    .hero::before { background: radial-gradient(ellipse at 80% 70%, #19b4d910, transparent 60%); }
+    .hero p { color: #64809d; }
+    .hero-kicker { color: #1887bf; }
+    .hero .btn-outline { color: #123c6d; border-color: #b8cddd; }
+    .hero .btn-outline:hover { border-color: #1887bf; }
+    .hero-brand-slot { width: min(100%, 560px); aspect-ratio: 2048 / 866; margin: 0 auto 32px; }
+    .hero-banner { display: block; width: 100%; height: 100%; }
+    .hero.is-docking { position: fixed; inset: 0 0 auto; z-index: 2; width: 100%; opacity: var(--dock-opacity, 0); transform: translateY(var(--dock-offset, 90px)); }
+    .hero.is-docking .hero-banner { visibility: hidden; }
+    @media (max-width: 640px) { .hero { padding-top: 92px; } .hero-brand-slot { width: min(100%, 390px); margin-bottom: 28px; } }
+    /* Native language controls remain available before and after the intro. */
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+    .brand-actions { position: absolute; top: 31px; right: 36px; display: flex; align-items: center; gap: 10px; z-index: 1; }
+    .brand-actions .brand-skip { position: static; white-space: nowrap; }
+    .language-switch { display: inline-flex; flex-shrink: 0; }
+    .language-switch[hidden] { display: none; }
+    .language-switch select { min-height: 36px; max-width: 130px; padding: 7px 10px; border: 1px solid #b8cddd; border-radius: 30px; background: #f8fafc; color: #123c6d; font: inherit; font-size: 12px; cursor: pointer; }
+    .language-switch select:focus-visible { outline: 3px solid #fa9900; outline-offset: 3px; }
+    .site-nav .nav-actions { display: flex; align-items: center; justify-content: flex-end; flex-wrap: wrap; gap: 20px; }
+    .site-nav .nav-actions a { margin-left: 0; white-space: nowrap; }
+    .brand-scroll-label { display: block; }
+    html:lang(zh) .hero h1 { font-size: clamp(36px, 6vw, 68px); line-height: 1.2; letter-spacing: -.025em; }
+    html:lang(zh) h2 { text-wrap: balance; }
+    html:lang(zh) .section-kicker { letter-spacing: .12em; }
+    @media (max-width: 640px) {
+      .brand-actions { top: 58px; right: 18px; }
+      .site-nav { padding: 18px; gap: 12px; }
+      .site-nav .nav-actions { gap: 10px; }
+    }
   </style>
 </head>
 <body>
 
-<section class="brand-intro" aria-label="QD Project Manager brand introduction">
+<section class="brand-intro" data-i18n-aria-label="introLabel" aria-label="QD Projects Manager brand introduction">
     <div class="brand-stage">
       <div class="brand-eyebrow">QD / PROJECT MANAGER</div>
-      <a class="brand-skip" href="#product">Skip intro ↘</a>
-      <div class="brand-lockup" aria-hidden="true"><svg class="brand-mark" viewBox="0 0 1024 1024" fill="none"><g transform="translate(0 79)"><g class="brand-ribbon" data-side="left" fill="#123c6d"><path d="M433 30C333 36 240 75 166 142L267 242C314 200 371 178 433 172Z"/><path d="M145 165C81 237 45 326 41 420H186C190 362 211 309 247 266Z"/><path d="M41 452C45 543 79 628 141 697L240 595C208 554 190 506 186 452Z"/><path d="M263 617 165 718C235 774 322 805 417 807V672C359 670 307 651 263 617Z"/><path d="M449 666V805C493 801 537 788 576 767L472 663Z"/></g><g class="brand-ribbon" data-side="right"><path d="M465 30C554 38 638 72 704 125L610 230C568 197 518 177 465 172Z" fill="#226ca8"/><path d="M728 148 634 252C667 287 689 329 701 375L798 240C780 207 756 176 728 148Z" fill="#fa9900"/><path d="M925 320 815 469C805 545 771 610 713 657L800 744C891 680 944 575 944 462C944 413 938 367 925 320Z" fill="#1887bf"/><path d="M925 320 815 469 813 487H941C948 432 940 375 925 320Z" fill="#19b4d9"/></g><g class="brand-stroke" data-start=".63" data-end=".75" data-dx="-1" data-dy="1.38"><path d="M518 466 601 350 665 346 675 410 585 532Z" fill="#fa9900"/><path d="M665 346 675 410 585 532 551 499Z" fill="#f58000"/></g><g class="brand-stroke" data-start=".68" data-end=".80" data-dx="1" data-dy=".99"><path d="M347 502H511L859 843H689Z" fill="#19b4d9"/><path d="M347 502H430L775 843H689Z" fill="#078bc1"/><path d="M347 502H511L567 558 484 639Z" fill="#fa9900"/><path d="M347 502H430L527 598 484 639Z" fill="#f58000"/><path d="M484 639 567 558 677 666 593 747Z" fill="#43a64b"/><path d="M484 639 527 598 635 706 593 747Z" fill="#069650"/></g><g class="brand-stroke" data-start=".73" data-end=".86" data-dx="1" data-dy="-1.38"><path d="M607 551 877 178 839 150 1010 75 992 261 954 234 674 619Z" fill="#19b4d9"/><path d="M1010 75 992 261 954 234 674 619 640 585Z" fill="#0b92cb"/><path d="M607 551 765 333 801 359 640 585Z" fill="#43a64b"/><path d="M640 585 801 359 835 388 674 619Z" fill="#069650"/></g></g></svg></div>
+      <div class="brand-actions"><label class="language-switch" hidden><span class="sr-only" data-i18n="language">Language</span><select data-language-select data-i18n-aria-label="language" aria-label="Language"><option value="zh-Hans" lang="zh-Hans">简体中文</option><option value="zh-Hant" lang="zh-Hant">繁體中文</option><option value="en" lang="en">English</option></select></label><a data-i18n="skip" class="brand-skip" href="#product">Skip intro ↘</a></div>
+      <div class="brand-artwork"><div class="brand-lockup" aria-hidden="true"><svg class="brand-mark" viewBox="0 0 1024 1024" fill="none"><g transform="translate(0 79)"><g class="brand-ribbon" data-side="left" fill="#123c6d"><path d="M433 30C333 36 240 75 166 142L267 242C314 200 371 178 433 172Z"/><path d="M145 165C81 237 45 326 41 420H186C190 362 211 309 247 266Z"/><path d="M41 452C45 543 79 628 141 697L240 595C208 554 190 506 186 452Z"/><path d="M263 617 165 718C235 774 322 805 417 807V672C359 670 307 651 263 617Z"/><path d="M449 666V805C493 801 537 788 576 767L472 663Z"/></g><g class="brand-ribbon" data-side="right"><path d="M465 30C554 38 638 72 704 125L610 230C568 197 518 177 465 172Z" fill="#226ca8"/><path d="M728 148 634 252C667 287 689 329 701 375L798 240C780 207 756 176 728 148Z" fill="#fa9900"/><path d="M925 320 815 469C805 545 771 610 713 657L800 744C891 680 944 575 944 462C944 413 938 367 925 320Z" fill="#1887bf"/><path d="M925 320 815 469 813 487H941C948 432 940 375 925 320Z" fill="#19b4d9"/></g><g class="brand-stroke" data-start=".63" data-end=".75" data-dx="1" data-dy="-1.38"><path d="M518 466 601 350 665 346 675 410 585 532Z" fill="#fa9900"/><path d="M665 346 675 410 585 532 551 499Z" fill="#f58000"/></g><g class="brand-stroke" data-start=".68" data-end=".80" data-dx="-345" data-dy="-341"><path d="M347 502H511L859 843H689Z" fill="#19b4d9"/><path d="M347 502H430L775 843H689Z" fill="#078bc1"/><path d="M347 502H511L567 558 484 639Z" fill="#fa9900"/><path d="M347 502H430L527 598 484 639Z" fill="#f58000"/><path d="M484 639 567 558 677 666 593 747Z" fill="#43a64b"/><path d="M484 639 527 598 635 706 593 747Z" fill="#069650"/></g><g class="brand-stroke" data-start=".73" data-end=".86" data-dx="1" data-dy="-1.38"><path d="M607 551 877 178 839 150 1010 75 992 261 954 234 674 619Z" fill="#19b4d9"/><path d="M1010 75 992 261 954 234 674 619 640 585Z" fill="#0b92cb"/><path d="M607 551 765 333 801 359 640 585Z" fill="#43a64b"/><path d="M640 585 801 359 835 388 674 619Z" fill="#069650"/></g></g></svg></div>
       <div class="brand-wordmark"><h2 class="brand-accessible-title">QD Projects Manager</h2><svg class="brand-banner-type" viewBox="1060 0 988 866" aria-hidden="true">  <g fill="#123c6d" font-family="Arial Black, Arial, Helvetica, sans-serif" font-weight="900" letter-spacing="-5">
     <text x="1060" y="365" font-size="380">QD</text>
     <text x="1070" y="570" font-size="180">Projects</text>
     <text x="1070" y="775" font-size="180">Manager</text>
-  </g></svg></div>
-      <div class="brand-caption">Independent pieces. One shared direction.</div>
-      <div class="brand-scroll">SCROLL TO ASSEMBLE<span></span></div>
+  </g></svg></div></div>
+      <div data-i18n="caption" class="brand-caption">Independent pieces. One shared direction.</div>
+      <div class="brand-scroll"><span class="brand-scroll-label" data-i18n="scroll">SCROLL TO ASSEMBLE</span><span class="brand-scroll-line" aria-hidden="true"></span></div>
     </div>
   </section>
   <!-- Hero -->
-  <section class="hero" id="product"><nav class="site-nav" aria-label="Product navigation"><strong>QD<span style="color:#54c7df">.</span></strong><div><a href="#features">Features</a><a href="#get-started">Get started ↗</a></div></nav>
+  <section class="hero" id="product"><nav class="site-nav" data-i18n-aria-label="navigationLabel" aria-label="Product navigation"><strong>QD<span style="color:#54c7df">.</span></strong><div class="nav-actions"><a data-i18n="navFeatures" href="#features">Features</a><a data-i18n="navStart" href="#get-started">Get started ↗</a><label class="language-switch" hidden><span class="sr-only" data-i18n="language">Language</span><select data-language-select data-i18n-aria-label="language" aria-label="Language"><option value="zh-Hans" lang="zh-Hans">简体中文</option><option value="zh-Hant" lang="zh-Hant">繁體中文</option><option value="en" lang="en">English</option></select></label></div></nav>
     <div class="hero-inner">
-      <img src="assets/brand/qd-banner.svg" alt="QD Projects Manager" class="hero-logo">
-      <div class="hero-kicker">Clarity in every direction</div><h1>Multi-team progress tracking,<br>automated.</h1>
-      <p>Connect your Tencent Docs spreadsheets and get live dashboards, team rankings, and instant alerts — across Android, iOS, and Web.</p>
+      <div class="hero-brand-slot"><svg class="hero-banner" role="img" aria-label="QD Projects Manager" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2048 866" fill="none">
+  <title>QD Projects Manager</title>
+  <svg x="20" y="0" width="980" height="866" viewBox="0 0 1024 1024">  <g transform="translate(0 79)">
+    <g fill="#123c6d">
+      <path d="M433 30C333 36 240 75 166 142L267 242C314 200 371 178 433 172Z"/>
+      <path d="M145 165C81 237 45 326 41 420H186C190 362 211 309 247 266Z"/>
+      <path d="M41 452C45 543 79 628 141 697L240 595C208 554 190 506 186 452Z"/>
+      <path d="M263 617 165 718C235 774 322 805 417 807V672C359 670 307 651 263 617Z"/>
+      <path d="M449 666V805C493 801 537 788 576 767L472 663Z"/>
+    </g>
+    <path d="M465 30C554 38 638 72 704 125L610 230C568 197 518 177 465 172Z" fill="#226ca8"/>
+    <path d="M728 148 634 252C667 287 689 329 701 375L798 240C780 207 756 176 728 148Z" fill="#fa9900"/>
+    <path d="M925 320 815 469C805 545 771 610 713 657L800 744C891 680 944 575 944 462C944 413 938 367 925 320Z" fill="#1887bf"/>
+    <path d="M925 320 815 469 813 487H941C948 432 940 375 925 320Z" fill="#19b4d9"/>
+    <path d="M518 466 601 350 665 346 675 410 585 532Z" fill="#fa9900"/>
+    <path d="M665 346 675 410 585 532 551 499Z" fill="#f58000"/>
+    <path d="M607 551 877 178 839 150 1010 75 992 261 954 234 674 619Z" fill="#19b4d9"/>
+    <path d="M1010 75 992 261 954 234 674 619 640 585Z" fill="#0b92cb"/>
+    <path d="M607 551 765 333 801 359 640 585Z" fill="#43a64b"/>
+    <path d="M640 585 801 359 835 388 674 619Z" fill="#069650"/>
+    <path d="M347 502H511L859 843H689Z" fill="#19b4d9"/>
+    <path d="M347 502H430L775 843H689Z" fill="#078bc1"/>
+    <path d="M347 502H511L567 558 484 639Z" fill="#fa9900"/>
+    <path d="M347 502H430L527 598 484 639Z" fill="#f58000"/>
+    <path d="M484 639 567 558 677 666 593 747Z" fill="#43a64b"/>
+    <path d="M484 639 527 598 635 706 593 747Z" fill="#069650"/>
+  </g>
+</svg>
+  <g fill="#123c6d" font-family="Arial Black, Arial, Helvetica, sans-serif" font-weight="900" letter-spacing="-5">
+    <text x="1060" y="365" font-size="380">QD</text>
+    <text x="1070" y="570" font-size="180">Projects</text>
+    <text x="1070" y="775" font-size="180">Manager</text>
+  </g>
+</svg>
+</div>
+      <div data-i18n="heroKicker" class="hero-kicker">Clarity in every direction</div><h1><span data-i18n="heroTitle">Multi-team progress tracking,</span><br><span data-i18n="heroTitleEnd">automated.</span></h1>
+      <p data-i18n="heroDescription">Connect your Tencent Docs spreadsheets and get live dashboards, team rankings, and instant alerts — across Android, iOS, and Web.</p>
       <div class="hero-buttons">
         <a href="https://github.com/FrankieNButtons/qd-project-manager" class="btn btn-primary">
           <svg width="18" height="18" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
-          View on GitHub
+          <span data-i18n="github">View on GitHub</span>
         </a>
-        <a href="#get-started" class="btn btn-outline">Get Started</a>
+        <a data-i18n="getStarted" href="#get-started" class="btn btn-outline">Get Started</a>
       </div>
     </div>
   </section>
 
   <!-- Badges -->
   <div class="badges">
-    <img src="https://img.shields.io/badge/Platform-Android%20%7C%20iOS%20%7C%20Web-blue?style=flat-square" alt="Platform">
+    <img src="https://img.shields.io/badge/Platform-Android%20%7C%20iOS%20%7C%20Web-blue?style=flat-square" data-i18n-alt="platform" data-badge-label="platform" alt="Platform">
     <img src="https://img.shields.io/badge/Expo%20SDK-55-000020?style=flat-square&logo=expo" alt="Expo SDK">
     <img src="https://img.shields.io/badge/React%20Native-0.83-61DAFB?style=flat-square&logo=react" alt="React Native">
-    <img src="https://img.shields.io/badge/License-MIT-green?style=flat-square" alt="License">
-    <img src="https://img.shields.io/github/stars/FrankieNButtons/qd-project-manager?style=flat-square" alt="Stars">
+    <img src="https://img.shields.io/badge/License-MIT-green?style=flat-square" data-i18n-alt="license" data-badge-label="license" alt="License">
+    <img src="https://img.shields.io/github/stars/FrankieNButtons/qd-project-manager?style=flat-square" data-i18n-alt="stars" data-badge-label="stars" alt="Stars">
   </div>
 
   <!-- Screenshots -->
   <section class="screenshots">
-    <div class="section-kicker">A closer look</div><h2>Your projects, in perspective.</h2>
-    <p>Three screens, one workflow. Rankings, detail cards, and full configurability.</p>
+    <div data-i18n="screenshotsKicker" class="section-kicker">A closer look</div><h2 data-i18n="screenshotsTitle">Your projects, in perspective.</h2>
+    <p data-i18n="screenshotsDescription">Three screens, one workflow. Rankings, detail cards, and full configurability.</p>
     <div class="phone-row">
       <div class="phone-frame">
-        <img src="assets/screenshots/overview.png" alt="Overview">
-        <div class="label">Overview</div>
+        <img src="assets/screenshots/overview.png" data-i18n-alt="overview" alt="Overview">
+        <div data-i18n="overview" class="label">Overview</div>
       </div>
       <div class="phone-frame">
-        <img src="assets/screenshots/teams.png" alt="Teams">
-        <div class="label">Teams</div>
+        <img src="assets/screenshots/teams.png" data-i18n-alt="teams" alt="Teams">
+        <div data-i18n="teams" class="label">Teams</div>
       </div>
       <div class="phone-frame">
-        <img src="assets/screenshots/settings.png" alt="Settings">
-        <div class="label">Settings</div>
+        <img src="assets/screenshots/settings.png" data-i18n-alt="settings" alt="Settings">
+        <div data-i18n="settings" class="label">Settings</div>
       </div>
     </div>
   </section>
@@ -515,37 +585,37 @@
   <!-- Features -->
   <section class="features" id="features">
     <div class="features-inner">
-      <div class="section-kicker">Designed to keep you moving</div><h2>Less chasing. More clarity.</h2>
+      <div data-i18n="featuresKicker" class="section-kicker">Designed to keep you moving</div><h2 data-i18n="featuresTitle">Less chasing. More clarity.</h2>
       <div class="features-grid">
         <div class="feature-card">
           <div class="feature-icon" style="background: #E6F0FD;">&#x1F4CA;</div>
-          <h3>Team Rankings</h3>
-          <p>All teams ranked by weighted progress. Stacked bars show each indicator's contribution at a glance.</p>
+          <h3 data-i18n="rankingsTitle">Team Rankings</h3>
+          <p data-i18n="rankingsDescription">All teams ranked by weighted progress. Stacked bars show each indicator's contribution at a glance.</p>
         </div>
         <div class="feature-card">
           <div class="feature-icon" style="background: #FEF3C7;">&#x1F514;</div>
-          <h3>Smart Alerts</h3>
-          <p>Detects when teams add or remove indicators. Modal alerts require acknowledgment; share a pre-drafted alignment message.</p>
+          <h3 data-i18n="alertsTitle">Smart Alerts</h3>
+          <p data-i18n="alertsDescription">Detects when teams add or remove indicators. Modal alerts require acknowledgment; share a pre-drafted alignment message.</p>
         </div>
         <div class="feature-card">
           <div class="feature-icon" style="background: #ECFDF5;">&#x2696;&#xFE0F;</div>
-          <h3>Weighted Scoring</h3>
-          <p>Adjust how much each KPI matters. Patents twice as important as partnerships? Set it here.</p>
+          <h3 data-i18n="scoringTitle">Weighted Scoring</h3>
+          <p data-i18n="scoringDescription">Adjust how much each KPI matters. Patents twice as important as partnerships? Set it here.</p>
         </div>
         <div class="feature-card">
           <div class="feature-icon" style="background: #FEE2E2;">&#x1F50D;</div>
-          <h3>Sort &amp; Filter</h3>
-          <p>Sort by any indicator. Filter by completion status or custom conditions like "patents > 50".</p>
+          <h3 data-i18n="filtersTitle">Sort &amp; Filter</h3>
+          <p data-i18n="filtersDescription">Sort by any indicator. Filter by completion status or custom conditions like "patents > 50".</p>
         </div>
         <div class="feature-card">
           <div class="feature-icon" style="background: #F3E8FF;">&#x1F4E8;</div>
-          <h3>Message Center</h3>
-          <p>Full event log with unread badges. Tap any alert to re-open its modal and take action.</p>
+          <h3 data-i18n="messagesTitle">Message Center</h3>
+          <p data-i18n="messagesDescription">Full event log with unread badges. Tap any alert to re-open its modal and take action.</p>
         </div>
         <div class="feature-card">
           <div class="feature-icon" style="background: #E0F2FE;">&#x1F4F1;</div>
-          <h3>Cross-Platform</h3>
-          <p>One codebase. Runs natively on Android and iOS via Expo, and in the browser for quick debugging.</p>
+          <h3 data-i18n="platformsTitle">Cross-Platform</h3>
+          <p data-i18n="platformsDescription">One codebase. Runs natively on Android and iOS via Expo, and in the browser for quick debugging.</p>
         </div>
       </div>
     </div>
@@ -554,27 +624,27 @@
   <!-- How it works -->
   <section class="how-it-works" id="get-started">
     <div class="how-it-works-inner">
-      <div class="section-kicker">From setup to momentum</div><h2>Three steps. One clear view.</h2>
+      <div data-i18n="setupKicker" class="section-kicker">From setup to momentum</div><h2 data-i18n="setupTitle">Three steps. One clear view.</h2>
       <div class="steps">
         <div class="step">
           <div class="step-number">1</div>
           <div class="step-content">
-            <h3>Clone &amp; install</h3>
-            <p>Clone the repo and run <code>npm install</code>. Requires Node.js 18+. No native toolchain needed.</p>
+            <h3 data-i18n="installTitle">Clone &amp; install</h3>
+            <p><span data-i18n="installBefore">Clone the repo and run </span><code>npm install</code><span data-i18n="installAfter">. Requires Node.js 18+. No native toolchain needed.</span></p>
           </div>
         </div>
         <div class="step">
           <div class="step-number">2</div>
           <div class="step-content">
-            <h3>Add your teams</h3>
-            <p>Open the Settings tab, paste a Tencent Docs spreadsheet link, and give the team a name. Repeat for each team.</p>
+            <h3 data-i18n="addTeamsTitle">Add your teams</h3>
+            <p data-i18n="addTeamsDescription">Open the Settings tab, paste a Tencent Docs spreadsheet link, and give the team a name. Repeat for each team.</p>
           </div>
         </div>
         <div class="step">
           <div class="step-number">3</div>
           <div class="step-content">
-            <h3>Watch it work</h3>
-            <p>The app fetches data automatically, ranks teams, and starts watching for indicator changes. You're done.</p>
+            <h3 data-i18n="watchTitle">Watch it work</h3>
+            <p data-i18n="watchDescription">The app fetches data automatically, ranks teams, and starts watching for indicator changes. You're done.</p>
           </div>
         </div>
       </div>
@@ -583,20 +653,21 @@
 
   <!-- CTA -->
   <section class="cta">
-    <h2>Ready to track?</h2>
-    <p>Stop opening multiple spreadsheets. Let the app do the cross-referencing for you.</p>
+    <h2 data-i18n="ctaTitle">Ready to track?</h2>
+    <p data-i18n="ctaDescription">Stop opening multiple spreadsheets. Let the app do the cross-referencing for you.</p>
     <a href="https://github.com/FrankieNButtons/qd-project-manager" class="btn btn-primary">
       <svg width="18" height="18" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
-      View on GitHub
+      <span data-i18n="github">View on GitHub</span>
     </a>
   </section>
 
   <!-- Footer -->
   <footer>
-    <p>QD Projects Manager &middot; MIT License &middot; Built with <a href="https://expo.dev">Expo</a> &amp; <a href="https://reactnative.dev">React Native</a></p>
+    <p>QD Projects Manager &middot; <span data-i18n="footerLicense">MIT License</span> &middot; <span data-i18n="footerBuilt">Built with </span><a href="https://expo.dev">Expo</a> &amp; <a href="https://reactnative.dev">React Native</a></p>
   </footer>
 
 
+<script src="assets/i18n.js"></script>
 <script src="assets/brand/brand-intro.js"></script>
 <script>
 (() => {
