@@ -2,8 +2,7 @@
   const intro = document.querySelector('.brand-intro');
   const lockup = intro.querySelector('.brand-lockup');
   const wordmark = intro.querySelector('.brand-wordmark');
-  const arrow = intro.querySelector('.brand-arrow');
-  const check = intro.querySelector('.brand-check');
+  const strokes = [...intro.querySelectorAll('.brand-stroke')];
   const caption = intro.querySelector('.brand-caption');
   const hint = intro.querySelector('.brand-scroll');
   const reduced = matchMedia('(prefers-reduced-motion: reduce)');
@@ -13,6 +12,50 @@
   const smooth = t => t * t * (3 - 2 * t);
   const phase = (p, start, end) => clamp((p - start) / (end - start));
   const radius = 340;
+  // A fixed, arc-length-parameterized hook feeds directly into the final circle.
+  // Pieces translate along this rail; their contours bend around its tangent.
+  function makeRail(side) {
+    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    const mirror = x => side === -1 ? x : 898 - x;
+    path.setAttribute('d', 'M' + mirror(-3400) + ' 650 C' + mirror(1450) + ' 800 ' + mirror(1650) + ' 80 449 80');
+    const length = path.getTotalLength();
+    const samples = Array.from({ length: 1201 }, (_, index) => path.getPointAtLength(length * index / 1200));
+    function center(distance) {
+      if (distance >= 0) {
+        const angle = distance / radius;
+        return { x: 449 + side * radius * Math.sin(angle), y: 420 - radius * Math.cos(angle), scale: 1 };
+      }
+      const fraction = Math.max(0, 1 + distance / length) * 1200;
+      const index = Math.min(1199, Math.floor(fraction));
+      const t = fraction - index;
+      const a = samples[index];
+      const b = samples[index + 1];
+      const scale = 1 + 2.4 * smooth(clamp(-distance / length));
+      let x = mix(a.x, b.x, t);
+      let y = mix(a.y, b.y, t);
+      if (distance < -length) {
+        const dx = samples[1].x - samples[0].x;
+        const dy = samples[1].y - samples[0].y;
+        const norm = Math.hypot(dx, dy);
+        x += dx / norm * (distance + length);
+        y += dy / norm * (distance + length);
+      }
+      return { x: 449 + (x - 449) * scale, y: 420 + (y - 420) * scale, scale };
+    }
+    return { length, at(distance, offset) {
+      const point = center(distance);
+      if (distance >= 0) {
+        const angle = distance / radius;
+        return { x: point.x + side * Math.sin(angle) * offset, y: point.y - Math.cos(angle) * offset };
+      }
+      const before = center(distance - .5);
+      const after = center(distance + .5);
+      const dx = after.x - before.x;
+      const dy = after.y - before.y;
+      const norm = Math.hypot(dx, dy);
+      return { x: point.x + side * dy / norm * offset * point.scale, y: point.y - side * dx / norm * offset * point.scale };
+    } };
+  }
   // Unwrap the actual logo contours into two ribbons. All points in a ribbon
   // share one spine and one camera, including the cyan overlay on the right.
   const ribbons = [...intro.querySelectorAll('.brand-ribbon')].map(group => {
@@ -41,7 +84,7 @@
         point.straightOffset = (point.offset - (low + high) / 2) * 140 / (high - low);
       });
     });
-    return { side, paths };
+    return { side, paths, rail: makeRail(side) };
   });
   let progress = 0;
   let frame = 0;
@@ -49,25 +92,21 @@
   let previousTime = 0;
 
   function drawRibbon(ribbon, p) {
-    const delay = ribbon.side === 1 ? .055 : 0;
-    const flight = easeOut(phase(p, .025 + delay, .33 + delay));
-    const bend = smooth(phase(p, .27 + delay, .60 + delay));
-    const zoom = mix(3.5, 1, flight);
-    const viewport = innerWidth / lockup.clientWidth * 1024;
-    const travel = ribbon.side * (viewport * .6 + 1100) * (1 - flight);
+    const delay = ribbon.side === 1 ? .065 : 0;
+    const t = phase(p, .015 + delay, .61 + delay);
+    // Keep the procession moving through the hook, then brake smoothly over
+    // the last third of the trip without moving or morphing the track itself.
+    const arrival = t < .65 ? t / .825 : 1 - .175 / .825 * Math.pow((1 - t) / .35, 2);
+    const travel = -(ribbon.rail.length * .88 + 400) * (1 - arrival);
     ribbon.paths.forEach(({ element, original, points }) => {
-      if (bend === 1) { element.setAttribute('d', original); return; }
+      if (t === 1) { element.setAttribute('d', original); return; }
       const contour = points.map(({ s, offset, straightOffset }, index) => {
-        offset = mix(straightOffset, offset, bend);
-        const angle = s / radius * bend;
-        // The zero-curvature limit is a straight line. Increasing curvature
-        // winds that same line into the exact original polar coordinates.
-        const spineX = bend < .0001 ? s : radius / bend * Math.sin(angle);
-        const spineY = bend < .0001 ? 0 : radius / bend * (1 - Math.cos(angle));
-        const depth = 1 + (1 - flight) * Math.max(0, s) / 1600;
-        const x = 449 + travel + ribbon.side * (spineX + Math.sin(angle) * offset) * zoom * depth;
-        const y = 80 + (spineY - Math.cos(angle) * offset) * zoom * depth;
-        return (index ? 'L' : 'M') + x.toFixed(2) + ' ' + y.toFixed(2);
+        const distance = s + travel;
+        // Retain a consistent strip width during flight; recover the exact
+        // asymmetric contour progressively as each point reaches the circle.
+        const settle = smooth(clamp(1 + distance / 450));
+        const point = ribbon.rail.at(distance, mix(straightOffset, offset, settle));
+        return (index ? 'L' : 'M') + point.x.toFixed(2) + ' ' + point.y.toFixed(2);
       }).join('');
       element.setAttribute('d', contour + 'Z');
     });
@@ -81,9 +120,8 @@
     const oldScroll = scrollY;
     intro.classList.add('is-complete');
     ribbons.forEach(ribbon => ribbon.paths.forEach(({ element, original }) => element.setAttribute('d', original)));
-    [lockup, wordmark, arrow, check].forEach(element => element.removeAttribute('style'));
-    arrow.removeAttribute('transform');
-    check.removeAttribute('transform');
+    [lockup, wordmark, ...strokes].forEach(element => element.removeAttribute('style'));
+    strokes.forEach(element => element.removeAttribute('transform'));
     // Retire the pinned scroll runway while keeping the current viewport stable.
     const removedHeight = oldHeight - intro.offsetHeight;
     if (removedHeight > 0 && oldScroll > intro.offsetTop) {
@@ -104,18 +142,22 @@
     if (Math.abs(target - progress) < .0001) progress = target;
     ribbons.forEach(ribbon => drawRibbon(ribbon, progress));
 
-    // Seat the lower check, then drive the rising arrow from bottom-left to
-    // top-right along its own shaft. No rotation or scale hides that direction.
-    const seat = easeOut(phase(progress, .57, .70));
-    check.setAttribute('transform', 'translate(' + -1150 * (1 - seat) + ' ' + -1150 * (1 - seat) + ')');
-    check.style.opacity = progress < .57 ? '0' : '1';
-    const insert = easeOut(phase(progress, .66, .81));
-    arrow.setAttribute('transform', 'translate(' + -1550 * (1 - insert) + ' ' + 2140 * (1 - insert) + ')');
-    arrow.style.opacity = progress < .66 ? '0' : '1';
+    // Each straight component advances along its own long axis, including
+    // the short orange leg; no assembled checkmark is pasted into position.
+    strokes.forEach(element => {
+      const start = Number(element.dataset.start);
+      const end = Number(element.dataset.end);
+      const arrival = easeOut(phase(progress, start, end));
+      const dx = Number(element.dataset.dx);
+      const dy = Number(element.dataset.dy);
+      const distance = (1 - arrival) * 4200 / Math.hypot(dx, dy);
+      element.setAttribute('transform', 'translate(' + -dx * distance + ' ' + -dy * distance + ')');
+      element.style.opacity = progress < start ? '0' : '1';
+    });
 
-    const reveal = smooth(phase(progress, .82, .97));
-    const shift = innerWidth <= 640 ? -innerWidth * .30 : -Math.min(innerWidth * .26, 330);
-    lockup.style.transform = 'translate(calc(-50% + ' + shift * reveal + 'px), -50%) scale(' + mix(1, innerWidth <= 640 ? .76 : .78, reveal) + ')';
+    const reveal = smooth(phase(progress, .87, .98));
+    const shift = -lockup.clientWidth * .5;
+    lockup.style.transform = 'translate(calc(-50% + ' + shift * reveal + 'px), -50%)';
     wordmark.style.opacity = reveal;
     wordmark.style.transform = 'translate(' + mix(-65, 0, reveal) + 'px, -50%)';
     wordmark.style.filter = reveal === 1 ? 'none' : 'blur(' + mix(12, 0, reveal) + 'px)';
